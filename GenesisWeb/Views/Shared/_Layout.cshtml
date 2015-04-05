@@ -1,0 +1,46 @@
+﻿@using GenesisWeb.Controllers;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Genesis Project</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body style="display:none">
+    <div id="chrome_ctrl_placeholder"></div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Genesis Project</p>
+        </footer>
+    </div>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/chromeloader")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/spcontext")   
+    @Scripts.Render("~/bundles/ember")
+    @Scripts.Render("~/bundles/templates")
+    @Scripts.Render("~/bundles/app")  
+
+    @if (HttpContext.Current.IsDebuggingEnabled)
+    {
+        @Html.RenderEmber()
+    }
+    else
+    {
+        @Scripts.Render("~/bundles/templates")
+    }
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
+
+
+

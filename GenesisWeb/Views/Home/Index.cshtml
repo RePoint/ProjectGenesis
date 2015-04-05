@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Genesis";
+}
+
+<div id="app-root">
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+  
+        Genesis.pageData = @Html.Raw(ViewBag.PageData);
+    </script>
+    <script type="text/javascript" src="/_layouts/15/MicrosoftAjax.js"></script>
+}
