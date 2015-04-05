@@ -1,86 +1,80 @@
 ﻿
-<div class="row">
-    <h2 class="col-md-12">The Genesis Project</h2>
-    <p class="col-md-12">
-        Filling in the SharePoint Gaps for custom sites.
-    </p>
-</div>
 
 
-<div class="row">
+<div class="row well">
     <div class="col-md-12">
-       
+
         <h3 class="ms-accentText" id="headScriptTitle">Script Links</h3>
         <div class="sectionDescription">
-            Script Links live in the layouts folder of your site or in a document library. To use a document library utlize replacement tokens (ex: ~sitecollection/Style Library/yourfile.js). 
+            Script Links live in the layouts folder of your site or in a document library. To use a document library utlize replacement tokens (ex: ~sitecollection/Style Library/yourfile.js).
             If you want to use a third party javascript file (like a CDN) or if you want to load a CSS file, utlize the Head Script section below.
         </div>
-        <div class="col-md-9">
-            <div id="newScriptReference">
+      
+        <div id="newScriptReference">
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Title</label>
-                            {{input value=Title class="form-control " }}
-                        </div>
-                        <div class="form-group">
-                            <label>Script Source Url</label>
-                            {{input value=ScriptSrc class="form-control" }}
-                        </div>
-                        <div class="form-group">
-                            <label>Sequence</label>
-                            {{input value=Sequence class="form-control" id="sequence" }}
-                        </div>
-                        <button {{ action 'addScript' item }} type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
-                        </button>
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="form-group">
+                        <label>Title</label>
+                        {{input value=Title class="form-control " }}
                     </div>
-
-                    <div class="col-md-6">
-
-                        <div id="scriptError" class="alert-danger alert" data-alert="alert" role="alert">
-                            <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
-                            <div id="scriptErrorDetails" class="errorDetails"></div>
-                        </div>
-                        <div id="scriptSuccess" class="alert-info alert" data-alert="alert" role="alert">
-                            <p><strong>Success:</strong> Your changes have been made.</p>
-                        </div>
+                    <div class="form-group">
+                        <label>Script Source Url</label>
+                        {{input value=ScriptSrc class="form-control" }}
                     </div>
+                    <div class="form-group">
+                        <label>Sequence</label>
+                        {{input value=Sequence class="form-control" id="sequence" }}
+                    </div>
+                    <button {{ action 'addScript' item }} type="button" style="float:right" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+                    </button>
                 </div>
 
+                <div class="col-lg-6 col-md-6 col-sm-6">
+
+                    <div id="scriptError" class="alert-danger alert" data-alert="alert" role="alert">
+                        <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
+                        <div id="scriptErrorDetails" class="errorDetails"></div>
+                    </div>
+                    <div id="scriptSuccess" class="alert-info alert" style="margin-top: 80px" data-alert="alert" role="alert">
+                        <p><strong>Success:</strong> Your changes have been made.</p>
+                    </div>
+                </div>
             </div>
-            <table id="formTemplates" class="table table-plain table-icon-primary">
-                <tbody>
-                    {{#if ScriptLinks}}
-                    <tr>
-                        <th>Title</th>
-                        <th>Script Source Url</th>
-                        <th>Sequence</th>
-                        <th></th>
-                    </tr>
-                    {{/if}}
-                    {{#each item in ScriptLinks }}
-                    <tr>
 
-                        <td>{{item.Title}}</td>
-                        <td>{{item.ScriptSrc}}</td>
-                        <td>{{item.Sequence}}</td>
-                        <td width="20px" class="pointer">
-                        
-                           <a {{ action 'deleteScript' item }} href="#" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>                        
-
-                        </td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
         </div>
+        {{#if ScriptLinks}}
+        <table id="formTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px">
+            <tbody>
+                <tr>
+                    <th>Title</th>
+                    <th>Script Source Url</th>
+                    <th>Sequence</th>
+                    <th></th>
+                </tr>
+                {{#each item in ScriptLinks }}
+                <tr>
+
+                    <td>{{item.Title}}</td>
+                    <td>{{item.ScriptSrc}}</td>
+                    <td>{{item.Sequence}}</td>
+                    <td width="20px" class="pointer">
+
+                        <a {{ action 'deleteScript' item }} href="#" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>
+
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{/if}}
+       
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-9">
+<div class="row well">
+    <div class="col-md-12">
       
         <h3 class="ms-accentText" id="headScriptTitle">Head script</h3>
         <div class="sectionDescription">
@@ -90,8 +84,26 @@
         </div>
 
      
-        <div class="col-md-12">
-            {{ textarea type="text" value=HeaderScripts class="form-control col-md-12" rows="8"}}
+        <div class="col-md-9">
+            <div class="form-group">
+                {{ textarea type="text" value=HeaderScripts class="form-control col-md-12" rows="8"}}
+            </div>
+            <button {{ action 'saveScriptBlock' }} type="button" style="float:right" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save Head Script
+            </button>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="scriptBlockSuccessAlert" class="alert-info alert col-md-6" data-alert="alert" role="alert">
+                    <p><strong>Success:</strong> Your changes have been made.</p>
+                </div>
+                <div id="scriptBlockSuccessError" class="alert-danger alert col-md-12" data-alert="alert" role="alert">
+                    <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
+                    <div id="scriptBlockSuccessDetails" class="errorDetails"></div>
+                </div>
+            </div>
         </div>
        
 
@@ -99,20 +111,3 @@
 </div>
 
 
-<div class="row">
-    <div class="col-md-12">
-
-        <button {{ action 'saveScriptBlock' }} type="button" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save Head Script
-        </button>
-
-        <br />
-        <div id="scriptBlockSuccessAlert" class="alert-info alert col-md-6" data-alert="alert" role="alert">
-            <p><strong>Success:</strong> Your changes have been made.</p>
-        </div>
-        <div id="scriptBlockSuccessError" class="alert-danger alert col-md-12" data-alert="alert" role="alert">
-            <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
-            <div id="scriptBlockSuccessDetails" class="errorDetails"></div>
-        </div>       
-    </div>
-</div>

@@ -31,8 +31,8 @@ function chromeLoaded() {
 function renderChrome() {
     // The Help, Account and Contact pages receive the 
     //   same query string parameters as the main page
-    var options = {
-        //"appTitle": "Project Genesis",
+    var options = {     
+        "appTitle": "Project Genesis",
         // The onCssLoaded event allows you to 
         //  specify a callback to execute when the
         //  chrome resources have been loaded.
