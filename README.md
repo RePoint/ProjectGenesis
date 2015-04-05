@@ -1,5 +1,4 @@
-# ProjectGenesis
-SharePoint Project Genesis
+# SharePoint Project Genesis
 
 SharePoint Project Genesis is SharePoint Provider Hosted app solution that uses ASP.Net MVC 4, Ember.JS and Web API.
 
