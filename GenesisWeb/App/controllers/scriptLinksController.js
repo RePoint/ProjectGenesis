@@ -5,42 +5,45 @@
         addScript: function () {
             var self = this;
 
-            //Clear all errros and alerts
-            $(".alert").hide();
-            $(".errorDetails").html("");
+            if($("#newScriptLinksForm").valid()) {
 
-            var postdata = {
-                SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
-                SPAppToken: Genesis.pageData.spAppToken,
-                Title: this.get('Title'),
-                ScriptSrc: this.get('ScriptSrc'),
-                Sequence: this.get('Sequence')
-            };
+                //Clear all errros and alerts
+                $(".alert").hide();
+                $(".errorDetails").html("");
 
-            Em.$.ajax(
-              "/api/home/addscript", {
-                  data: JSON.stringify(postdata),
-                  contentType: "application/json",
-                  processData: false,
-                  type: 'POST'
-              }
-            ).done(function (data) {         
-                var scriptLinks = self.get('ScriptLinks');                
-                scriptLinks.pushObject(data);
+                var postdata = {
+                    SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
+                    SPAppToken: Genesis.pageData.spAppToken,
+                    Title: this.get('Title'),
+                    ScriptSrc: this.get('ScriptSrc'),
+                    Sequence: this.get('Sequence')
+                };
 
-                $("#scriptSuccess").fadeIn('slow');
-                window.setTimeout(function () {
-                    $("#scriptSuccess").fadeOut('slow');
-                }, 2000);
+                Em.$.ajax(
+                  "/api/home/addscript", {
+                      data: JSON.stringify(postdata),
+                      contentType: "application/json",
+                      processData: false,
+                      type: 'POST'
+                  }
+                ).done(function (data) {         
+                    var scriptLinks = self.get('ScriptLinks');                
+                    scriptLinks.pushObject(data);
 
-                self.set('Title', '');
-                self.set('ScriptSrc', '');
-                self.set('Sequence', '');
+                    $("#scriptSuccess").fadeIn('slow');
+                    window.setTimeout(function () {
+                        $("#scriptSuccess").fadeOut('slow');
+                    }, 2000);
 
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#scriptError").fadeIn('slow');
-                $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
-            });
+                    self.set('Title', '');
+                    self.set('ScriptSrc', '');
+                    self.set('Sequence', '');
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#scriptError").fadeIn('slow');
+                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                });
+            }
         },
         editScript: function (item) {
             Ember.set(item, "IsEditing", true);
@@ -52,72 +55,77 @@
             $(".alert").hide();
             $(".errorDetails").html("");
 
-            var postdata = {
-                SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
-                SPAppToken: Genesis.pageData.spAppToken,
-                Title: item.Title,
-                ScriptSrc: item.ScriptSrc,
-                Sequence: item.Sequence
-            };
+            if ($("#updateScriptLinksForm").valid()) {
 
-            Em.$.ajax(
-              "/api/home/updatescript", {
-                  data: JSON.stringify(postdata),
-                  contentType: "application/json",
-                  processData: false,
-                  type: 'POST'
-              }
-            ).done(function (data) {
-              
-                $("#scriptSuccess").fadeIn('slow');
-                window.setTimeout(function () {
-                    $("#scriptSuccess").fadeOut('slow');
-                }, 2000);
+                var postdata = {
+                    SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
+                    SPAppToken: Genesis.pageData.spAppToken,
+                    Title: item.Title,
+                    ScriptSrc: item.ScriptSrc,
+                    Sequence: item.Sequence
+                };
 
-                self.set('Title', '');
-                self.set('ScriptSrc', '');
-                self.set('Sequence', '');
+                Em.$.ajax(
+                  "/api/home/updatescript", {
+                      data: JSON.stringify(postdata),
+                      contentType: "application/json",
+                      processData: false,
+                      type: 'POST'
+                  }
+                ).done(function (data) {
 
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#scriptError").fadeIn('slow');
-                $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
-            });
+                    $("#scriptSuccess").fadeIn('slow');
+                    window.setTimeout(function () {
+                        $("#scriptSuccess").fadeOut('slow');
+                    }, 2000);
 
-            Ember.set(item, "IsEditing", false);
+                    self.set('Title', '');
+                    self.set('ScriptSrc', '');
+                    self.set('Sequence', '');
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#scriptError").fadeIn('slow');
+                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                });
+
+                Ember.set(item, "IsEditing", false);
+            }
         },
         deleteScript: function (item) {
-            var self = this;
+            if (confirm("Are you sure you want to delete this record?")) {
+                var self = this;
 
-            //Clear all errros and alerts
-            $(".alert").hide();
-            $(".errorDetails").html("");
+                //Clear all errros and alerts
+                $(".alert").hide();
+                $(".errorDetails").html("");
 
-            var postdata = {
-                SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
-                SPAppToken: Genesis.pageData.spAppToken,
-                ScriptLink: item
-            };
-          
-            Em.$.ajax(
-              "/api/home/deletescript", {
-                  data: JSON.stringify(postdata),
-                  contentType: "application/json",
-                  processData: false,
-                  type: 'POST'
-              }
-            ).done(function (data) {
-                var scriptLinks = self.get('ScriptLinks');
-                scriptLinks.removeObject(item);               
-            
-                $("#scriptSuccess").fadeIn('slow');
-                window.setTimeout(function () {
-                    $("#scriptSuccess").fadeOut('slow');
-                }, 2000);
+                var postdata = {
+                    SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
+                    SPAppToken: Genesis.pageData.spAppToken,
+                    ScriptLink: item
+                };
 
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#scriptError").fadeIn('slow');
-                $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
-            });
+                Em.$.ajax(
+                  "/api/home/deletescript", {
+                      data: JSON.stringify(postdata),
+                      contentType: "application/json",
+                      processData: false,
+                      type: 'POST'
+                  }
+                ).done(function (data) {
+                    var scriptLinks = self.get('ScriptLinks');
+                    scriptLinks.removeObject(item);
+
+                    $("#scriptSuccess").fadeIn('slow');
+                    window.setTimeout(function () {
+                        $("#scriptSuccess").fadeOut('slow');
+                    }, 2000);
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#scriptError").fadeIn('slow');
+                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                });
+            }
         }
     }
 })

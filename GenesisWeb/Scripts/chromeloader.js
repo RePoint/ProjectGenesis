@@ -33,6 +33,7 @@ function renderChrome() {
     //   same query string parameters as the main page
     var options = {     
         "appTitle": "Project Genesis",
+        "appIconUrl": "/Images/AppIcon.png",
         // The onCssLoaded event allows you to 
         //  specify a callback to execute when the
         //  chrome resources have been loaded.

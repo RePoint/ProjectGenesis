@@ -41,6 +41,35 @@ namespace GenesisWeb.api
         }
 
         [HttpPost]
+        public dynamic ValidateUniqueScriptName([FromBody] dynamic config)
+        {
+            try
+            {
+                using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
+                {
+                    string title = config["Title"] != null ? config["Title"].ToString() : null;
+                    var customActions = clientContext.Site.UserCustomActions;
+                    clientContext.Load(customActions);
+                    clientContext.ExecuteQuery();
+
+                    var scriptAction = customActions.FirstOrDefault(x => x.Title.Equals(title));
+
+                    if (scriptAction == null)
+                        return true;
+                    else
+                        return false;
+                }               
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
+            }
+        }    
+   
+        
+
+        [HttpPost]
         public dynamic Addscript([FromBody] dynamic config)
         {
             try
@@ -48,9 +77,9 @@ namespace GenesisWeb.api
                 ScriptLinkAction action;
                 using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
                 {
-                    var title = config["Title"].ToString();
-                    var scriptSrc = config["ScriptSrc"].ToString();
-                    var sequence = config["Sequence"].ToString();
+                    var title = config["Title"] != null ? config["Title"].ToString() : null;
+                    var scriptSrc = config["ScriptSrc"] != null ? config["ScriptSrc"].ToString() : null; 
+                    var sequence = config["Sequence"] != null ? config["Sequence"].ToString() : null; 
 
                     action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence, true);                 
                 }
@@ -72,9 +101,9 @@ namespace GenesisWeb.api
                 ScriptLinkAction action;
                 using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
                 {
-                    var title = config["Title"].ToString();
-                    var scriptSrc = config["ScriptSrc"].ToString();
-                    var sequence = config["Sequence"].ToString();
+                    var title = config["Title"] != null ? config["Title"].ToString() : null;
+                    var scriptSrc = config["ScriptSrc"] != null ? config["ScriptSrc"].ToString() : null;
+                    var sequence = config["Sequence"] != null ? config["Sequence"].ToString() : null; 
 
                     action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence,false);
                 }
@@ -147,7 +176,7 @@ namespace GenesisWeb.api
                     configurations.HeaderScripts = customAction.ScriptBlock;
                 }
                 else if (customAction.Title != LOAD_SCRIPT &&
-                    !String.IsNullOrEmpty(customAction.ScriptSrc))
+                    String.IsNullOrEmpty(customAction.ScriptBlock))
                 {
                     configurations.ScriptLinks.Add(new ScriptLinkAction { Title = customAction.Title, ScriptSrc = customAction.ScriptSrc, Sequence = customAction.Sequence });
                 }
@@ -308,6 +337,7 @@ namespace GenesisWeb.api
             {
                 headerScriptAction.DeleteObject();
             }
+          
 
             clientContext.Load(headerScriptAction);
             clientContext.ExecuteQuery();

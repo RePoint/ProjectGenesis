@@ -4,72 +4,76 @@
     If you want touse a third party javascript file (like a CDN) or if you want to load a CSS file, utlize the Head Script section below.
 </div>
 
-<div id="newScriptReference">
+<form id="newScriptLinksForm" method="get" action="">
 
-    <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="form-group">
-                <label>Title</label>
-                {{input value=Title class="form-control " }}
-            </div>
-            <div class="form-group">
-                <label>Script Source Url</label>
-                {{input value=ScriptSrc class="form-control" }}
-            </div>
-            <div class="form-group">
-                <label>Sequence</label>
-                {{input value=Sequence class="form-control" id="sequence" }}
-            </div>
-            <button {{ action 'addScript' item }} type="button" style="float:right" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
-            </button>
+ 
+    <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="form-group">
+            <label for="scriptLinkTitle">Title</label>
+            {{input id="scriptLinkTitle" name="scriptLinkTitle" value=Title class="form-control" required=true uniqueScriptTitle=true}}
         </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-6">
-
-            <div id="scriptError" class="alert-danger alert" data-alert="alert" role="alert">
-                <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
-                <div id="scriptErrorDetails" class="errorDetails"></div>
-            </div>
-            <div id="scriptSuccess" class="alert-info alert" style="margin-top: 80px" data-alert="alert" role="alert">
-                <p><strong>Success:</strong> Your changes have been made.</p>
-            </div>
+        <div class="form-group">
+            <label for="scriptLinkSrc">Script Source Url</label>
+            {{input id="scriptLinkSrc" name="scriptLinkSrc" value=ScriptSrc class="form-control" required=true noturl=true}}
         </div>
+        <div class="form-group">
+            <label for="scriptLinkSequence">Sequence</label>
+            {{input id="scriptLinkSequence" name="scriptLinkSequence" value=Sequence class="form-control" id="sequence" digits=true maxlength=3}}
+        </div>
+        <button {{ action 'addScript' item }} type="button" style="float:right" class="btn btn-default btn-sm">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+        </button>
     </div>
 
-</div>
-{{#if ScriptLinks}}
-<table id="formTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px">
-    <tbody>
-        <tr>
-            <th>Title</th>
-            <th>Script Source Url</th>
-            <th>Sequence</th>
-            <th></th>
-        </tr>
-        {{#each item in ScriptLinks }}
-        <tr>
-            {{#if item.IsEditing}}
-            <td>{{item.Title}}</td>
-            <td>{{input value=item.ScriptSrc class="form-control" }}</td>
-            <td>{{input value=item.Sequence class="form-control" }}</td>
-            {{else}}
-            <td>{{item.Title}}</td>
-            <td>{{item.ScriptSrc}}</td>
-            <td>{{item.Sequence}}</td>
-            {{/if}}
+    <div class="col-lg-6 col-md-6 col-sm-6">
 
-            <td width="80px" class="pointer">
+        <div id="scriptError" class="alert-danger alert" data-alert="alert" role="alert">
+            <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
+            <div id="scriptErrorDetails" class="errorDetails"></div>
+        </div>
+        <div id="scriptSuccess" class="alert-info alert" style="margin-top: 80px" data-alert="alert" role="alert">
+            <p><strong>Success:</strong> Your changes have been made.</p>
+        </div>
+    </div>
+ 
+
+</form>
+
+<form id="updateScriptLinksForm" method="get" action="">
+
+    {{#if ScriptLinks}}
+    <table id="formTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px;float:left">
+        <tbody>
+            <tr>
+                <th>Title</th>
+                <th>Script Source Url</th>
+                <th>Sequence</th>
+                <th></th>
+            </tr>
+            {{#each item in ScriptLinks }}
+            <tr>
                 {{#if item.IsEditing}}
-                <a {{ action 'updateScript' item }} href="#" title="Update" class="glyphicon glyphicon-save"><span class="screenReader">Update</span></a>
+                <td>{{item.Title}}</td>
+                <td>{{input value=item.ScriptSrc class="form-control" required=true noturl=true  }}</td>
+                <td>{{input value=item.Sequence class="form-control" digits=true maxlength=3 }}</td>
                 {{else}}
-                <a {{ action 'editScript' item }} href="#" title="Edit" class="glyphicon glyphicon-edit"><span class="screenReader">Edit</span></a>
-                <a {{ action 'deleteScript' item }} href="#" title="Delete" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>
+                <td>{{item.Title}}</td>
+                <td>{{item.ScriptSrc}}</td>
+                <td>{{item.Sequence}}</td>
                 {{/if}}
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{/if}}
+
+                <td width="80px" class="pointer">
+                    {{#if item.IsEditing}}
+                    <a {{ action 'updateScript' item }} href="#" title="Update" class="glyphicon glyphicon-save"><span class="screenReader">Update</span></a>
+                    {{else}}
+                    <a {{ action 'editScript' item }} href="#" title="Edit" class="glyphicon glyphicon-edit"><span class="screenReader">Edit</span></a>
+                    <a {{ action 'deleteScript' item }} href="#" title="Delete" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
+</form>
 

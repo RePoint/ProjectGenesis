@@ -2,6 +2,17 @@
     rootElement: "#app-root"
 });
 
+//add extra properties to the text field for validations
+Ember.TextField.reopen({
+    attributeBindings: [
+        'required',
+        'digits',
+        'maxlength',
+        'noturl',
+        'uniqueScriptTitle'
+    ]
+});
+
 Genesis.ApplicationRoute = Ember.Route.extend({
     actions: {
         showModal: function (name, content) {

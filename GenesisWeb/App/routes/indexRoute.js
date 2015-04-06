@@ -22,7 +22,7 @@
     },
     setupControllers:function (controller, model) {
         this.controllerFor('scriptLinks').set('model', model);
-        this.controllerFor('scriptBlock').set('content', model);
+        this.controllerFor('scriptBlock').set('model', model);
     },
     actions: {
         error: function (error, transition) {

@@ -31,6 +31,14 @@
     color: #0072c6;
 }
 
+label.error {
+	margin-left: 10px;
+	width: auto;
+	display:inline;
+	color: red;
+	font-weight:normal;
+}
+
 .screenReader {
     position: absolute;
     left: -9999px;
