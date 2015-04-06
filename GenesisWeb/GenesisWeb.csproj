@@ -161,6 +161,8 @@
     <Compile Include="TokenHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\controllers\scriptBlockController.js" />
+    <Content Include="App\controllers\scriptLinksController.js" />
     <Content Include="App\routes\modelNotFoundRoute.js" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -177,6 +179,8 @@
     <Content Include="App\templates\loading.hbs" />
     <Content Include="App\templates\error.hbs" />
     <Content Include="App\templates\modelNotFound.hbs" />
+    <Content Include="App\templates\scriptLinks.hbs" />
+    <Content Include="App\templates\scriptBlock.hbs" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\chromeloader.js" />
     <Content Include="App\controllers\indexController.js" />

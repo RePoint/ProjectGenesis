@@ -52,7 +52,7 @@ namespace GenesisWeb.api
                     var scriptSrc = config["ScriptSrc"].ToString();
                     var sequence = config["Sequence"].ToString();
 
-                    action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence);                 
+                    action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence, true);                 
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, action);
@@ -63,6 +63,31 @@ namespace GenesisWeb.api
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
             }
         }
+
+        [HttpPost]
+        public dynamic Updatescript([FromBody] dynamic config)
+        {
+            try
+            {
+                ScriptLinkAction action;
+                using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
+                {
+                    var title = config["Title"].ToString();
+                    var scriptSrc = config["ScriptSrc"].ToString();
+                    var sequence = config["Sequence"].ToString();
+
+                    action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence,false);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, action);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
+            }
+        }
+
 
         [HttpPost]
         public dynamic DeleteScript([FromBody] dynamic config)
@@ -234,12 +259,22 @@ namespace GenesisWeb.api
         }
 
 
-        private ScriptLinkAction SaveCustomActionScriptLink(ClientContext clientContext, string title, string scriptSrc, string sequence)
+        private ScriptLinkAction SaveCustomActionScriptLink(ClientContext clientContext, string title, string scriptSrc, string sequence, bool isNew)
         {          
             //TODO: duplicate check
 
-            UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;      
-            UserCustomAction customAction = customActions.Add();
+            UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;     
+
+            UserCustomAction customAction = null;
+            if (isNew)
+            {
+                customAction = customActions.Add();
+            }
+            else {
+                clientContext.Load(customActions);
+                clientContext.ExecuteQuery();
+                customAction = customActions.FirstOrDefault(x => x.Title.Equals(title));
+            }
          
             customAction.Location = "ScriptLink";
             customAction.ScriptSrc = scriptSrc;
@@ -292,5 +327,6 @@ namespace GenesisWeb.api
         public string Title { get; set; }
         public string ScriptSrc { get; set; }
         public int Sequence { get; set; }
+        public bool IsEditing { get; set; }
     }
 }

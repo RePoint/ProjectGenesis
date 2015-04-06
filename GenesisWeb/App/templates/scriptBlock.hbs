@@ -1,0 +1,30 @@
+﻿<h3 class="ms-accentText" id="headScriptTitle">Head script</h3>
+<div class="sectionDescription">
+    Add any Javascript you want here to add it to the header of your site. Do not add the "script" tag, it will do it for you.
+    If you want to add a reference to an external URL (like a CDN), use this syntax: LoadScript('url');. If you want to add a
+    reference to a CSS file, use this syntax: LoadCSS('url')
+</div>
+
+
+<div class="col-md-9">
+    <div class="form-group">
+        {{ textarea type="text" value=HeaderScripts class="form-control col-md-12" rows="8"}}
+    </div>
+    <button {{ action 'saveScriptBlock' }} type="button" style="float:right" class="btn btn-default btn-sm">
+        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save Head Script
+    </button>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="scriptBlockSuccessAlert" class="alert-info alert col-md-6" data-alert="alert" role="alert">
+            <p><strong>Success:</strong> Your changes have been made.</p>
+        </div>
+        <div id="scriptBlockSuccessError" class="alert-danger alert col-md-12" data-alert="alert" role="alert">
+            <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
+            <div id="scriptBlockSuccessDetails" class="errorDetails"></div>
+        </div>
+    </div>
+</div>
+
