@@ -44,7 +44,8 @@ namespace GenesisWeb.api
             }
         }
 
-        [HttpPost]
+        //Depricated
+        [HttpPost]        
         public dynamic ValidateUniqueScriptName([FromBody] dynamic config)
         {
             try
@@ -180,7 +181,7 @@ namespace GenesisWeb.api
                         {
                             Id = customAction.Id.ToString(),
                             Title = customAction.Title.Replace(GENESIS_JS, ""),
-                            ScriptSrc = customAction.ScriptSrc,
+                            ScriptSrc = scriptSrc,
                             Sequence = customAction.Sequence.ToString(),
                             Type = JS
                         });  
@@ -371,6 +372,7 @@ namespace GenesisWeb.api
         public string ScriptSrc { get; set; }
         public string Sequence { get; set; }
         public bool IsEditing { get; set; }
+        public bool IsNew { get; set; }
         public string Id { get; set; }
         public string Type { get; set; }
     }

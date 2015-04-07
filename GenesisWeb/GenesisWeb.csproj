@@ -144,7 +144,6 @@
   <ItemGroup>
     <Compile Include="api\APIHelper.cs" />
     <Compile Include="api\ScriptController.cs" />
-    <Compile Include="api\ListsController.cs" />
     <Compile Include="api\UserController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />

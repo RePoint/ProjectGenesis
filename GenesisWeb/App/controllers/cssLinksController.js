@@ -1,7 +1,6 @@
 ﻿Genesis.CssLinksController = Ember.ObjectController.extend({
     needs: "application",   
-    application: Ember.computed.alias("controllers.application"),
-    rowNotInEditMode: true,
+    application: Ember.computed.alias("controllers.application"), 
     actions: {       
         addRow: function () {
             var self = this;
@@ -19,8 +18,15 @@
         },
         editRow: function (item) {
             Ember.set(item, "IsEditing", true);
-            this.set("rowNotInEditMode", false);
-        },      
+        },
+        cancelRow: function (item) {
+            var scriptLinks = this.get('ScriptLinks');
+
+            if (item.IsNew == true)
+                scriptLinks.removeObject(item);
+            else
+                Ember.set(item, "IsEditing", false);
+        },
         updateRow: function (item) {
             var self = this;
 
@@ -59,7 +65,6 @@
                 });
 
                 Ember.set(item, "IsEditing", false);
-                this.set("rowNotInEditMode", true);
             }
         },
         deleteRow: function (item) {
@@ -97,6 +102,6 @@
                     $("#cssErrorDetails").html(jqXHR.responseJSON.Message);
                 });
             }
-        }
+        },
     }
 })

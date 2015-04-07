@@ -5,36 +5,46 @@
 
 <form id="updateCSSLinksForm" method="get" action="">
     
-    <table id="formCSSTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px;float:left">
+    <table id="formCSSTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px;float:left;table-layout: fixed;">
  
         <thead>
             <tr>
-                <th>Title</th>
-                <th>CSS Link</th>
-                <th>Sequence</th>
-                <th></th>
+                <th style="width: 20%">Title</th>
+                <th style="width: 45%">Script Source Url</th>
+                <th style="width: 15%">Sequence</th>
+                <th style="width: 20%"></th>
             </tr>
         </thead>
         <tbody>
 
             {{#each cssItem in CSSLinks }}
             <tr>
-                {{#if cssItem.IsEditing}}
-                    <td>{{input id="cssLinkTitle" name="cssLinkTitle" value=cssItem.Title class="form-control" required=true }}</td>
-                    <td>{{input id="cssLinkSrc" name="cssLinkSrc" value=cssItem.ScriptSrc class="form-control" required=true }}</td>
-                    <td>{{input id="cssLinkSeq" name="cssLinkSeq" value=cssItem.Sequence class="form-control" digits=true maxlength=3 }}</td>
-                {{else}}                  
-                    <td>{{cssItem.Title}}</td>
-                    <td>{{cssItem.ScriptSrc}}</td>
-                    <td>{{cssItem.Sequence}}</td>
+                 {{#if cssItem.IsEditing}}
+                <!--using regular inputs instead of Ember Text views so we can dynamically build our id's easily-->
+                <td><input type="text" id="scriptLinkTitle{{cssItem.Id}}" name="scriptLinkTitle{{cssItem.Id}}" value="{{cssItem.Title}}" class="form-control" required /></td>
+                <td><input type="text" id="scriptLinkSrc{{cssItem.Id}}" name="scriptLinkSrc{{cssItem.Id}}" value="{{cssItem.ScriptSrc}}" class="form-control" required /></td>
+                <td><input type="text" id="scriptLinkSeq{{cssItem.Id}}" name="scriptLinkSeq{{cssItem.Id}}" value="{{cssItem.Sequence}}" class="form-control" digits=true maxlength=3 /></td>
+                {{else}}                    
+                <td style="word-wrap: break-word">{{cssItem.Title}}</td>
+                <td style="word-wrap: break-word">{{cssItem.ScriptSrc}}</td>
+                <td style="word-wrap: break-word">{{cssItem.Sequence}}</td>
                 {{/if}}
-
-                <td width="80px" class="pointer">
+       
+                <td >
                     {{#if cssItem.IsEditing}}
-                    <a {{ action 'updateRow' cssItem }} href="#" title="Update" class="glyphicon glyphicon-save"><span class="screenReader">Update</span></a>
+                        <button {{ action 'updateRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Update
+                        </button>
+                        <button {{ action 'cancelRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel
+                        </button>
                     {{else}}
-                    <a {{ action 'editRow' cssItem }} href="#" title="Edit" class="glyphicon glyphicon-edit"><span class="screenReader">Edit</span></a>
-                    <a {{ action 'deleteRow' cssItem }} href="#" title="Delete" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>
+                        <button {{ action 'editRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                        </button>
+                        <button {{ action 'deleteRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                        </button>
                     {{/if}}
                 </td>
             </tr>
@@ -43,15 +53,11 @@
         <tfoot>
             <tr>             
                 <td colspan="4" style="text-align:center">
-                    {{#if rowNotInEditMode}}
-                        <button {{ action 'addRow' }} type="button"  class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
-                        </button>
-                    {{else}}
-                        <button {{ action 'addRow' }} type="button" disabled="true" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
-                        </button>
-                    {{/if}}
+                  
+                    <button {{ action 'addRow' }} type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+                    </button>
+                 
                 </td>               
             </tr>
         </tfoot>

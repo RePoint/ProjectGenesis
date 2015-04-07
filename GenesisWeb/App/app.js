@@ -13,11 +13,6 @@ Ember.TextField.reopen({
     ]
 });
 
-Ember.Select.reopen({
-    attributeBindings: [
-        'required'      
-    ]
-});
 
 Genesis.ApplicationRoute = Ember.Route.extend({
     actions: {
@@ -71,5 +66,15 @@ Genesis.MyModalComponent = Ember.Component.extend({
     }.on('didInsertElement')
 });
 */
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
+}
 
 
