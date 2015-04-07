@@ -1,7 +1,6 @@
-﻿<h3 class="ms-accentText" id="headScriptTitle">Script Links</h3>
+﻿<h3 class="ms-accentText" id="headScriptTitle">JavaScript</h3>
 <div class="sectionDescription">
-    Script Links live in the layouts folder of your site or in a document library. To use a document library utlize replacement tokens (ex: ~sitecollection/Style Library/yourfile.js).
-    If you want touse a third party javascript file (like a CDN) or if you want to load a CSS file, utlize the Head Script section below.
+    JavaScript references can be regular links (http://site.com/Style Library/style.js) or relative links (/Style Library/style.js)
 </div>
 
 <form id="updateScriptLinksForm" method="get" action="">
@@ -22,7 +21,7 @@
             <tr>
                 {{#if item.IsEditing}}
                     <td>{{input id="scriptLinkTitle" name="scriptLinkTitle" value=item.Title class="form-control" required=true }}</td>
-                    <td>{{input id="scriptLinkSrc" name="scriptLinkSrc" value=item.ScriptSrc class="form-control" required=true noturl=true  }}</td>
+                    <td>{{input id="scriptLinkSrc" name="scriptLinkSrc" value=item.ScriptSrc class="form-control" required=true  }}</td>
                     <td>{{input id="scriptLinkSeq" name="scriptLinkSeq" value=item.Sequence class="form-control" digits=true maxlength=3 }}</td>
                 {{else}}                  
                     <td>{{item.Title}}</td>
@@ -45,11 +44,11 @@
             <tr>             
                 <td colspan="4" style="text-align:center">
                     {{#if rowNotInEditMode}}
-                        <button {{ action 'addRow' item }} type="button"  class="btn btn-default btn-sm">
+                        <button {{ action 'addRow' }} type="button"  class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
                         </button>
                     {{else}}
-                        <button {{ action 'addRow' item }} type="button" disabled="true" class="btn btn-default btn-sm">
+                        <button {{ action 'addRow' }} type="button" disabled="true" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
                         </button>
                     {{/if}}

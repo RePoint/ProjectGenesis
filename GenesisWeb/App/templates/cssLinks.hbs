@@ -1,0 +1,69 @@
+﻿<h3 class="ms-accentText" id="headScriptTitle">CSS</h3>
+<div class="sectionDescription">
+   Cascading Style Sheets can be regular links (http://site.com/Style Library/style.css) or relative links (/Style Library/style.css)
+</div>
+
+<form id="updateCSSLinksForm" method="get" action="">
+    
+    <table id="formCSSTemplates" class="table table-plain table-icon-primary" style="margin-top: 10px;float:left">
+ 
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>CSS Link</th>
+                <th>Sequence</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {{#each cssItem in CSSLinks }}
+            <tr>
+                {{#if cssItem.IsEditing}}
+                    <td>{{input id="cssLinkTitle" name="cssLinkTitle" value=cssItem.Title class="form-control" required=true }}</td>
+                    <td>{{input id="cssLinkSrc" name="cssLinkSrc" value=cssItem.ScriptSrc class="form-control" required=true }}</td>
+                    <td>{{input id="cssLinkSeq" name="cssLinkSeq" value=cssItem.Sequence class="form-control" digits=true maxlength=3 }}</td>
+                {{else}}                  
+                    <td>{{cssItem.Title}}</td>
+                    <td>{{cssItem.ScriptSrc}}</td>
+                    <td>{{cssItem.Sequence}}</td>
+                {{/if}}
+
+                <td width="80px" class="pointer">
+                    {{#if cssItem.IsEditing}}
+                    <a {{ action 'updateRow' cssItem }} href="#" title="Update" class="glyphicon glyphicon-save"><span class="screenReader">Update</span></a>
+                    {{else}}
+                    <a {{ action 'editRow' cssItem }} href="#" title="Edit" class="glyphicon glyphicon-edit"><span class="screenReader">Edit</span></a>
+                    <a {{ action 'deleteRow' cssItem }} href="#" title="Delete" class="glyphicon glyphicon-remove-circle"><span class="screenReader">Delete</span></a>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr>             
+                <td colspan="4" style="text-align:center">
+                    {{#if rowNotInEditMode}}
+                        <button {{ action 'addRow' }} type="button"  class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+                        </button>
+                    {{else}}
+                        <button {{ action 'addRow' }} type="button" disabled="true" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+                        </button>
+                    {{/if}}
+                </td>               
+            </tr>
+        </tfoot>
+    </table>
+    <div class="col-md-12" style="clear:left">
+        <div id="scssError" class="alert-danger alert" data-alert="alert" role="alert">
+            <p>Oh no. An error has occurred. Please give the following information to your administrator so they can fix the issue...</p>
+            <div id="cssErrorDetails" class="errorDetails"></div>
+        </div>
+        <div id="cssSuccess" class="alert-info alert" data-alert="alert" role="alert">
+            <p><strong>Success:</strong> Your changes have been made.</p>
+        </div>
+    </div>  
+</form>
+

@@ -1,7 +1,7 @@
 ﻿Genesis.modelNotFoundRoute = Ember.Route.extend({
     model: function () {
         return Em.$.ajax(
-          "/api/home/getconfigurations", {
+          "/api/script/getconfigurations", {
               data: "{ 'SPHostUrl': '" + decodeURIComponent(getQueryStringParameter('SPHostUrl')) + "', 'SPAppToken': '" + Genesis.pageData.spAppToken + "' }",
               contentType: "application/json",
               processData: false,

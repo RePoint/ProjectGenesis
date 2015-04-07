@@ -16,7 +16,7 @@
             };
 
             Em.$.ajax(
-              "/api/home/saveconfigurations", {
+              "/api/script/saveconfigurations", {
                   data: JSON.stringify(postdata),
                   contentType: "application/json",
                   processData: false,

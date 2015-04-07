@@ -1,4 +1,4 @@
-﻿Genesis.ScriptLinksController = Ember.ObjectController.extend({
+﻿Genesis.CssLinksController = Ember.ObjectController.extend({
     needs: "application",   
     application: Ember.computed.alias("controllers.application"),
     rowNotInEditMode: true,
@@ -11,10 +11,10 @@
             data.ScriptSrc = "";
             data.Sequence = "";
             data.IsEditing = true;
-            data.Type = "JS";
+            data.Type = "CSS";
 
-            var scriptLinks = self.get('ScriptLinks');
-            scriptLinks.pushObject(data);
+            var cssLinks = self.get('CSSLinks');
+            cssLinks.pushObject(data);
            
         },
         editRow: function (item) {
@@ -28,7 +28,7 @@
             $(".alert").hide();
             $(".errorDetails").html("");
 
-            if ($("#updateScriptLinksForm").valid()) {
+            if ($("#updateCSSLinksForm").valid()) {
 
                 var postdata = {
                     SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
@@ -48,14 +48,14 @@
                     //reset the id to take care of new records
                     Ember.set(item, "Id", data.Id);
 
-                    $("#scriptSuccess").fadeIn('slow');
+                    $("#cssSuccess").fadeIn('slow');
                     window.setTimeout(function () {
-                        $("#scriptSuccess").fadeOut('slow');
+                        $("#cssSuccess").fadeOut('slow');
                     }, 2000);                  
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#scriptError").fadeIn('slow');
-                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);                  
+                    $("#cssError").fadeIn('slow');
+                    $("#cssErrorDetails").html(jqXHR.responseJSON.Message);                  
                 });
 
                 Ember.set(item, "IsEditing", false);
@@ -84,17 +84,17 @@
                       type: 'POST'
                   }
                 ).done(function (data) {
-                    var scriptLinks = self.get('ScriptLinks');
-                    scriptLinks.removeObject(item);
+                    var cssLinks = self.get('CSSLinks');
+                    cssLinks.removeObject(item);
 
-                    $("#scriptSuccess").fadeIn('slow');
+                    $("#cssSuccess").fadeIn('slow');
                     window.setTimeout(function () {
-                        $("#scriptSuccess").fadeOut('slow');
+                        $("#cssSuccess").fadeOut('slow');
                     }, 2000);
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#scriptError").fadeIn('slow');
-                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                    $("#cssError").fadeIn('slow');
+                    $("#cssErrorDetails").html(jqXHR.responseJSON.Message);
                 });
             }
         }

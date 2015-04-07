@@ -25,7 +25,7 @@
 
 			return $.validator.methods.remote.call(this, value, element, {			
 				type: "POST",
-				url: "/api/home/ValidateUniqueScriptName",
+				url: "/api/script/ValidateUniqueScriptName",
 				data: JSON.stringify(postdata),
 				contentType: "application/json"
 			});

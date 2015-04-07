@@ -9,20 +9,25 @@
             into: 'index',
             outlet: 'scriptBlock',
         });
+        this.render('cssLinks', {
+            into: 'index',
+            outlet: 'cssLinks',
+        });
     },
     model: function () {
         return Em.$.ajax(
-          "/api/home/getconfigurations", {
+          "/api/script/getconfigurations", {
               data: "{ 'SPHostUrl': '" + decodeURIComponent(getQueryStringParameter('SPHostUrl')) + "', 'SPAppToken': '" + Genesis.pageData.spAppToken + "' }",
               contentType: "application/json",
               processData: false,
               type: 'POST'
           }
         );
-    },
+    },  
     setupControllers:function (controller, model) {
         this.controllerFor('scriptLinks').set('model', model);
         this.controllerFor('scriptBlock').set('model', model);
+        this.controllerFor('cssLinks').set('model', model);
     },
     actions: {
         error: function (error, transition) {

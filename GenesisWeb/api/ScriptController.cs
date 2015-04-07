@@ -13,11 +13,16 @@ using Microsoft.SharePoint.Client.Publishing;
 
 namespace GenesisWeb.api
 {
-    public class HomeController : ApiController
+    public class ScriptController : ApiController
     {
+      
         const string HEADER = "Genesis_HeaderScript";
         const string LOAD_SCRIPT = "Genesis_LoadScript";
         const string LOAD_CSS = "Genesis_LoadCSS";
+        const string JS = "JS";
+        const string CSS = "CSS";
+        const string GENESIS_JS = "GENESIS_JS";
+        const string GENESIS_CSS = "GENESIS_CSS";
 
         [HttpPost]
         public dynamic GetConfigurations([FromBody] dynamic config)
@@ -26,10 +31,9 @@ namespace GenesisWeb.api
             {   
                 Configurations configurations = new Configurations();
                 using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
-                {
+                {                    
                     UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
-                    configurations = GetConfigurations(clientContext, out customActions);
-
+                    configurations = GetConfigurations(clientContext,  out customActions);
                 }
               
                 return Request.CreateResponse(HttpStatusCode.OK, configurations);
@@ -139,34 +143,60 @@ namespace GenesisWeb.api
             clientContext.Load(customActions);
             clientContext.ExecuteQuery();
 
+
             configurations.ScriptLinks = new List<ScriptLinkAction>();
+            configurations.CSSLinks = new List<ScriptLinkAction>();
+
             foreach (UserCustomAction customAction in customActions)
             {
                 if (customAction.Title == HEADER)
                 {
                     configurations.HeaderScripts = customAction.ScriptBlock;
                 }
-                else if (customAction.Title != LOAD_SCRIPT &&
-                    String.IsNullOrEmpty(customAction.ScriptBlock))
-                {                
+                else if (customAction.Title != LOAD_SCRIPT)
+                {
+                    if (customAction.Title.StartsWith(GENESIS_CSS) &&
+                         !String.IsNullOrEmpty(customAction.ScriptBlock))
+                    {
+                        string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadCSS('" }, StringSplitOptions.None)[1];
+                        scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
 
-                    configurations.ScriptLinks.Add(new ScriptLinkAction { Id = customAction.Id.ToString(), 
-                        Title = customAction.Title, 
-                        ScriptSrc = customAction.ScriptSrc, 
-                        Sequence = customAction.Sequence.ToString() 
-                    });
+                        configurations.CSSLinks.Add(new ScriptLinkAction
+                        {
+                            Id = customAction.Id.ToString(),
+                            Title = customAction.Title.Replace(GENESIS_CSS, ""),
+                            ScriptSrc = scriptSrc,
+                            Sequence = customAction.Sequence.ToString(),
+                            Type = CSS
+                        });  
+                    }
+                    else if (customAction.Title.StartsWith(GENESIS_JS) &&
+                            !String.IsNullOrEmpty(customAction.ScriptBlock))
+                    {
+                        string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadScript('" }, StringSplitOptions.None)[1];
+                        scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
+
+                        configurations.ScriptLinks.Add(new ScriptLinkAction
+                        {
+                            Id = customAction.Id.ToString(),
+                            Title = customAction.Title.Replace(GENESIS_JS, ""),
+                            ScriptSrc = customAction.ScriptSrc,
+                            Sequence = customAction.Sequence.ToString(),
+                            Type = JS
+                        });  
+                    }
                 }
             }
 
             return configurations;
         }
 
-        private void SaveCustomActionScriptBlock(ClientContext clientContext, string configurations)
+        private void RegisterHelpers(ClientContext clientContext)
         {
             UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
-            Configurations existing = GetConfigurations(clientContext, out customActions);
+            clientContext.Load(customActions);
+            clientContext.ExecuteQuery();
 
-            var headerScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(HEADER));
             var loadScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_SCRIPT));
             var loadCSSAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_CSS));
 
@@ -205,6 +235,19 @@ namespace GenesisWeb.api
                 customLoadCSSAction.Update();
             }
 
+            clientContext.ExecuteQuery();
+        }
+
+        private void SaveCustomActionScriptBlock(ClientContext clientContext, string configurations)
+        {           
+            UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
+            clientContext.Load(customActions);
+            clientContext.ExecuteQuery();
+
+            RegisterHelpers(clientContext);
+
+            var headerScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(HEADER));  
+
             //Register the users custom scripts
             UserCustomAction customAction = customActions.Add();
             bool isNew = true;
@@ -236,36 +279,11 @@ namespace GenesisWeb.api
             //Debugging helper...
             //CleanupScriptBlock(clientContext, headerScriptAction, loadScriptAction, loadCSSAction);           
         }
-
-        /// <summary>
-        /// Useful helper function in case we make a mistake and need to delete the actions we've created
-        /// for the script block
-        /// </summary> 
-        private void CleanupScriptBlock(ClientContext clientContext, UserCustomAction headerScriptAction, UserCustomAction loadScriptAction, UserCustomAction loadCSSAction)
-        {
-            if (headerScriptAction != null)
-            {
-                headerScriptAction.DeleteObject();
-                clientContext.Load(headerScriptAction);
-            }
-
-            if (loadScriptAction != null)
-            {
-                loadScriptAction.DeleteObject();
-                clientContext.Load(loadScriptAction);
-            }
-
-            if (loadCSSAction != null)
-            {
-                loadCSSAction.DeleteObject();
-                clientContext.Load(loadCSSAction);
-            }
-            clientContext.ExecuteQuery();
-        }
-
+               
 
         private ScriptLinkAction SaveCustomActionScriptLink(ClientContext clientContext, ScriptLinkAction scriptLinkAction)
-        {          
+        {
+            RegisterHelpers(clientContext);
 
             UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
 
@@ -287,10 +305,18 @@ namespace GenesisWeb.api
                 customAction = customActions.Add();
             }
 
-         
+          
+
             customAction.Location = "ScriptLink";
-            customAction.ScriptSrc = scriptLinkAction.ScriptSrc;
             customAction.Title = scriptLinkAction.Title;          
+
+            if(scriptLinkAction.Type == JS) {
+                customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "');";
+                customAction.Title = GENESIS_JS + customAction.Title;
+            }else {
+                customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "');";
+                customAction.Title = GENESIS_CSS + customAction.Title;
+            }           
 
             int sequenceNum = 0;
             int.TryParse(scriptLinkAction.Sequence, out sequenceNum);
@@ -314,7 +340,9 @@ namespace GenesisWeb.api
         {
 
             UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
-            Configurations existing = GetConfigurations(clientContext, out customActions);
+            clientContext.Load(customActions);
+            clientContext.ExecuteQuery();
+
             var headerScriptAction = customActions.FirstOrDefault(x => x.Id.Equals(new Guid(scriptLink.Id)));
 
             if (headerScriptAction != null)
@@ -335,6 +363,7 @@ namespace GenesisWeb.api
     {
         public string HeaderScripts { get; set; }
         public List<ScriptLinkAction> ScriptLinks { get; set; }
+        public List<ScriptLinkAction> CSSLinks { get; set; }
     }
 
     public class ScriptLinkAction {
@@ -343,5 +372,6 @@ namespace GenesisWeb.api
         public string Sequence { get; set; }
         public bool IsEditing { get; set; }
         public string Id { get; set; }
+        public string Type { get; set; }
     }
 }

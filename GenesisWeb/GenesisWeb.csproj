@@ -143,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="api\APIHelper.cs" />
-    <Compile Include="api\HomeController.cs" />
+    <Compile Include="api\ScriptController.cs" />
     <Compile Include="api\ListsController.cs" />
     <Compile Include="api\UserController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -162,8 +162,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App\controllers\scriptBlockController.js" />
+    <Content Include="App\controllers\cssLinksController.js" />
     <Content Include="App\controllers\scriptLinksController.js" />
     <Content Include="App\routes\modelNotFoundRoute.js" />
+    <Content Include="App\views\cssLinksView.js" />
     <Content Include="App\views\scriptsLinkView.js" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -183,6 +185,7 @@
     <Content Include="App\templates\modelNotFound.hbs" />
     <Content Include="App\templates\scriptLinks.hbs" />
     <Content Include="App\templates\scriptBlock.hbs" />
+    <Content Include="App\templates\cssLinks.hbs" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\chromeloader.js" />
     <Content Include="App\controllers\indexController.js" />
