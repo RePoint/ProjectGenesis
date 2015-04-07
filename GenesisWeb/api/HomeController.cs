@@ -65,47 +65,19 @@ namespace GenesisWeb.api
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
             }
-        }    
-   
-        
+        }   
+
 
         [HttpPost]
-        public dynamic Addscript([FromBody] dynamic config)
+        public dynamic SaveScript([FromBody] dynamic config)
         {
             try
             {
                 ScriptLinkAction action;
                 using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
                 {
-                    var title = config["Title"] != null ? config["Title"].ToString() : null;
-                    var scriptSrc = config["ScriptSrc"] != null ? config["ScriptSrc"].ToString() : null; 
-                    var sequence = config["Sequence"] != null ? config["Sequence"].ToString() : null; 
-
-                    action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence, true);                 
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK, action);
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
-            }
-        }
-
-        [HttpPost]
-        public dynamic Updatescript([FromBody] dynamic config)
-        {
-            try
-            {
-                ScriptLinkAction action;
-                using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
-                {
-                    var title = config["Title"] != null ? config["Title"].ToString() : null;
-                    var scriptSrc = config["ScriptSrc"] != null ? config["ScriptSrc"].ToString() : null;
-                    var sequence = config["Sequence"] != null ? config["Sequence"].ToString() : null; 
-
-                    action = SaveCustomActionScriptLink(clientContext, title, scriptSrc, sequence,false);
+                    ScriptLinkAction scriptLinkAction = JsonConvert.DeserializeObject<ScriptLinkAction>(config["ScriptLink"].ToString());
+                    action = SaveCustomActionScriptLink(clientContext, scriptLinkAction);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, action);
@@ -137,7 +109,6 @@ namespace GenesisWeb.api
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
             }
         }       
-
         
 
         [HttpPost]
@@ -177,8 +148,13 @@ namespace GenesisWeb.api
                 }
                 else if (customAction.Title != LOAD_SCRIPT &&
                     String.IsNullOrEmpty(customAction.ScriptBlock))
-                {
-                    configurations.ScriptLinks.Add(new ScriptLinkAction { Title = customAction.Title, ScriptSrc = customAction.ScriptSrc, Sequence = customAction.Sequence });
+                {                
+
+                    configurations.ScriptLinks.Add(new ScriptLinkAction { Id = customAction.Id.ToString(), 
+                        Title = customAction.Title, 
+                        ScriptSrc = customAction.ScriptSrc, 
+                        Sequence = customAction.Sequence.ToString() 
+                    });
                 }
             }
 
@@ -288,29 +264,36 @@ namespace GenesisWeb.api
         }
 
 
-        private ScriptLinkAction SaveCustomActionScriptLink(ClientContext clientContext, string title, string scriptSrc, string sequence, bool isNew)
+        private ScriptLinkAction SaveCustomActionScriptLink(ClientContext clientContext, ScriptLinkAction scriptLinkAction)
         {          
-            //TODO: duplicate check
 
-            UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;     
+            UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
 
             UserCustomAction customAction = null;
-            if (isNew)
+            Guid id;
+
+            if (!string.IsNullOrEmpty(scriptLinkAction.Id))
             {
-                customAction = customActions.Add();
-            }
-            else {
+                //update
+                id = new Guid(scriptLinkAction.Id);
                 clientContext.Load(customActions);
                 clientContext.ExecuteQuery();
-                customAction = customActions.FirstOrDefault(x => x.Title.Equals(title));
+                customAction = customActions.FirstOrDefault(x => x.Id.Equals(id));
             }
+            else
+            {
+                //insert
+                id = Guid.NewGuid();
+                customAction = customActions.Add();
+            }
+
          
             customAction.Location = "ScriptLink";
-            customAction.ScriptSrc = scriptSrc;
-            customAction.Title = title;
+            customAction.ScriptSrc = scriptLinkAction.ScriptSrc;
+            customAction.Title = scriptLinkAction.Title;          
 
             int sequenceNum = 0;
-            int.TryParse(sequence, out sequenceNum);
+            int.TryParse(scriptLinkAction.Sequence, out sequenceNum);
             customAction.Sequence = sequenceNum;
 
             customAction.Update();  
@@ -320,8 +303,9 @@ namespace GenesisWeb.api
 
             return new ScriptLinkAction { 
                 Title = customAction.Title, 
-                ScriptSrc = customAction.ScriptSrc, 
-                Sequence = customAction.Sequence 
+                ScriptSrc = customAction.ScriptSrc,
+                Sequence = customAction.Sequence.ToString(),
+                Id = customAction.Id.ToString()
             };
 
         }
@@ -331,7 +315,7 @@ namespace GenesisWeb.api
 
             UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
             Configurations existing = GetConfigurations(clientContext, out customActions);
-            var headerScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(scriptLink.Title));
+            var headerScriptAction = customActions.FirstOrDefault(x => x.Id.Equals(new Guid(scriptLink.Id)));
 
             if (headerScriptAction != null)
             {
@@ -356,7 +340,8 @@ namespace GenesisWeb.api
     public class ScriptLinkAction {
         public string Title { get; set; }
         public string ScriptSrc { get; set; }
-        public int Sequence { get; set; }
+        public string Sequence { get; set; }
         public bool IsEditing { get; set; }
+        public string Id { get; set; }
     }
 }

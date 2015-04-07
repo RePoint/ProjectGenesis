@@ -27,10 +27,7 @@
 				type: "POST",
 				url: "/api/home/ValidateUniqueScriptName",
 				data: JSON.stringify(postdata),
-				contentType: "application/json",
-				processData: false,
-				type: 'POST',
-		
+				contentType: "application/json"
 			});
 		},
 		"The Title you entered is already used"

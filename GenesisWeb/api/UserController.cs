@@ -29,7 +29,8 @@ namespace GenesisWeb.api
                 var result = new
                 {
                     username = user.Title,
-                    groups = user.Groups.Select(g => g.Title).ToArray()                  
+                    groups = user.Groups.Select(g => g.Title).ToArray(),
+                    siteCollectionAdmin = user.IsSiteAdmin
                 };
 
 

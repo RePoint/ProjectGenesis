@@ -13,6 +13,12 @@ Ember.TextField.reopen({
     ]
 });
 
+Ember.Select.reopen({
+    attributeBindings: [
+        'required'      
+    ]
+});
+
 Genesis.ApplicationRoute = Ember.Route.extend({
     actions: {
         showModal: function (name, content) {

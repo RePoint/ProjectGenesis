@@ -1,54 +1,26 @@
 ﻿Genesis.ScriptLinksController = Ember.ObjectController.extend({
     needs: "application",   
-    application: Ember.computed.alias("controllers.application"),   
+    application: Ember.computed.alias("controllers.application"),
+    rowNotInEditMode: true,
     actions: {       
-        addScript: function () {
+        addRow: function () {
             var self = this;
 
-            if($("#newScriptLinksForm").valid()) {
+            var data = new Object;
+            data.Title = "";
+            data.ScriptSrc = "";
+            data.Sequence = "";
+            data.IsEditing = true;
 
-                //Clear all errros and alerts
-                $(".alert").hide();
-                $(".errorDetails").html("");
-
-                var postdata = {
-                    SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
-                    SPAppToken: Genesis.pageData.spAppToken,
-                    Title: this.get('Title'),
-                    ScriptSrc: this.get('ScriptSrc'),
-                    Sequence: this.get('Sequence')
-                };
-
-                Em.$.ajax(
-                  "/api/home/addscript", {
-                      data: JSON.stringify(postdata),
-                      contentType: "application/json",
-                      processData: false,
-                      type: 'POST'
-                  }
-                ).done(function (data) {         
-                    var scriptLinks = self.get('ScriptLinks');                
-                    scriptLinks.pushObject(data);
-
-                    $("#scriptSuccess").fadeIn('slow');
-                    window.setTimeout(function () {
-                        $("#scriptSuccess").fadeOut('slow');
-                    }, 2000);
-
-                    self.set('Title', '');
-                    self.set('ScriptSrc', '');
-                    self.set('Sequence', '');
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#scriptError").fadeIn('slow');
-                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
-                });
-            }
+            var scriptLinks = self.get('ScriptLinks');
+            scriptLinks.pushObject(data);
+           
         },
-        editScript: function (item) {
+        editRow: function (item) {
             Ember.set(item, "IsEditing", true);
+            this.set("rowNotInEditMode", false);
         },      
-        updateScript: function (item) {
+        updateRow: function (item) {
             var self = this;
 
             //Clear all errros and alerts
@@ -60,13 +32,11 @@
                 var postdata = {
                     SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
                     SPAppToken: Genesis.pageData.spAppToken,
-                    Title: item.Title,
-                    ScriptSrc: item.ScriptSrc,
-                    Sequence: item.Sequence
+                    ScriptLink: item
                 };
 
                 Em.$.ajax(
-                  "/api/home/updatescript", {
+                  "/api/home/savescript", {
                       data: JSON.stringify(postdata),
                       contentType: "application/json",
                       processData: false,
@@ -74,24 +44,24 @@
                   }
                 ).done(function (data) {
 
+                    //reset the id to take care of new records
+                    Ember.set(item, "Id", data.Id);
+
                     $("#scriptSuccess").fadeIn('slow');
                     window.setTimeout(function () {
                         $("#scriptSuccess").fadeOut('slow');
-                    }, 2000);
-
-                    self.set('Title', '');
-                    self.set('ScriptSrc', '');
-                    self.set('Sequence', '');
+                    }, 2000);                  
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     $("#scriptError").fadeIn('slow');
-                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);                  
                 });
 
                 Ember.set(item, "IsEditing", false);
+                this.set("rowNotInEditMode", true);
             }
         },
-        deleteScript: function (item) {
+        deleteRow: function (item) {
             if (confirm("Are you sure you want to delete this record?")) {
                 var self = this;
 
