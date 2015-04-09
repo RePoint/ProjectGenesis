@@ -291,7 +291,7 @@ namespace GenesisWeb.api
             UserCustomAction customAction = null;
             Guid id;
 
-            if (!string.IsNullOrEmpty(scriptLinkAction.Id))
+            if (!scriptLinkAction.IsNew)
             {
                 //update
                 id = new Guid(scriptLinkAction.Id);

@@ -55,6 +55,8 @@
 
                     //reset the id to take care of new records
                     Ember.set(item, "Id", data.Id);
+                    Ember.set(item, "IsNew", false);
+                    Ember.set(item, "IsEditing", false);
 
                     $("#scriptSuccess").fadeIn('slow');
                     window.setTimeout(function () {
@@ -64,9 +66,7 @@
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     $("#scriptError").fadeIn('slow');
                     $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);                  
-                });
-
-                Ember.set(item, "IsEditing", false);
+                });               
             }
         },
         deleteRow: function (item) {

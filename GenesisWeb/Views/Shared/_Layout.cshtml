@@ -26,17 +26,11 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/spcontext")   
     @Scripts.Render("~/bundles/ember")
-    @Scripts.Render("~/bundles/templates")
     @Scripts.Render("~/bundles/app")  
 
-    @if (HttpContext.Current.IsDebuggingEnabled)
-    {
-        @Html.RenderEmber()
-    }
-    else
-    {
+  
         @Scripts.Render("~/bundles/templates")
-    }
+
 
     @RenderSection("scripts", required: false)
 

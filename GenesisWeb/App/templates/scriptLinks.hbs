@@ -20,10 +20,9 @@
             {{#each item in ScriptLinks }}
             <tr>
                 {{#if item.IsEditing}}
-                <!--using regular inputs instead of Ember Text views so we can dynamically build our id's easily-->
-                <td><input type="text" id="scriptLinkTitle{{item.Id}}" name="scriptLinkTitle{{item.Id}}" value="{{item.Title}}" class="form-control" required /></td>
-                <td><input type="text" id="scriptLinkSrc{{item.Id}}" name="scriptLinkSrc{{item.Id}}" value="{{item.ScriptSrc}}" class="form-control" required /></td>
-                <td><input type="text" id="scriptLinkSeq{{item.Id}}" name="scriptLinkSeq{{item.Id}}" value="{{item.Sequence}}" class="form-control" digits=true maxlength=3 /></td>
+                <td>{{ input type="text" id="scriptLinkTitle" name="scriptLinkTitle" value=item.Title class="form-control" required=true}}</td>
+                <td>{{ input type="text" id="scriptLinkSrc" name="scriptLinkSrc" value=item.ScriptSrc class="form-control" required=true}}</td>
+                <td>{{ input type="text" id="scriptLinkSeq" name="scriptLinkSeq" value=item.Sequence class="form-control"  digits=true maxlength=3}}</td>
                 {{else}}
                 <td style="word-wrap: break-word">{{item.Title}}</td>
                 <td style="word-wrap: break-word">{{item.ScriptSrc}}</td>

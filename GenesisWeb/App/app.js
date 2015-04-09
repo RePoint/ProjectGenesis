@@ -1,4 +1,6 @@
-﻿window.Genesis = Ember.Application.create({
+﻿var EmberENV = {FEATURES: {'ember-htmlbars': true}};
+
+window.Genesis = Ember.Application.create({
     rootElement: "#app-root"
 });
 
@@ -15,21 +17,7 @@ Ember.TextField.reopen({
 
 
 Genesis.ApplicationRoute = Ember.Route.extend({
-    actions: {
-        showModal: function (name, content) {
-            this.controllerFor(name).set('content', content);
-            this.render(name, {
-                into: 'application',
-                outlet: 'modal'
-            });
-        },
-        removeModal: function () {
-            this.disconnectOutlet({
-                outlet: 'modal',
-                parentView: 'application'
-            });
-        }
-    },
+
     model: function () {
         return Em.$.ajax(
           "/api/user/getcurrent/", {
@@ -42,30 +30,20 @@ Genesis.ApplicationRoute = Ember.Route.extend({
               }
           }
         );
+    },
+    setupControllers: function (controller, model) {       
+        if (model.siteCollectionAdmin == false) {
+            this.transitionTo('notAdmin');
+        }
     }
 });
 
 
 Genesis.Router.map(function () {
+    this.route('notAdmin');
     this.route('modelNotFound');
 });
 
-
-/*
-Genesis.MyModalComponent = Ember.Component.extend({
-    actions: {
-        ok: function () {
-            this.$('.modal').modal('hide');
-            this.sendAction('ok');
-        }
-    },
-    show: function () {
-        this.$('.modal').modal().on('hidden.bs.modal', function () {
-            this.sendAction('close');
-        }.bind(this));
-    }.on('didInsertElement')
-});
-*/
 
 function guid() {
     function s4() {
@@ -76,5 +54,3 @@ function guid() {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
       s4() + '-' + s4() + s4() + s4();
 }
-
-

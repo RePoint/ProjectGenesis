@@ -22,6 +22,7 @@
     <WorkflowPartId>{67908797-b2c0-4e12-a38c-091c9d377e3e}</WorkflowPartId>
     <CspkgPartId>{52fdc583-1ffd-4cb1-9b20-faa2dea90530}</CspkgPartId>
     <SqlPackagePartId>{77d1b35c-d56b-4ddf-aff0-6d81eb301ce5}</SqlPackagePartId>
+    <ActivePublishProfile>projectgenesis - Web Deploy</ActivePublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

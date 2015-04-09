@@ -32,28 +32,19 @@ namespace GenesisWeb
 
             bundles.Add(new ScriptBundle("~/bundles/chromeloader").Include(
                     "~/Scripts/chromeloader.js"));
-          
 
-            if (!HttpContext.Current.IsDebuggingEnabled)
-            {
-                bundles.Add(new Bundle("~/bundles/templates",
-                    new EmberHandlebarsBundleTransform())
-                    .IncludeDirectory("~/App/templates\\", "*.hbs", true)
-                );
-            }
 
              bundles.Add(new ScriptBundle("~/bundles/app").Include(
                "~/App/app.js",
-               "~/App/models/*.js",
+               "~/App/templates.js",
+              // "~/App/models/*.js",
                "~/App/routes/*.js",
                "~/App/controllers/*.js",
                "~/App/views/*.js"));
 
              bundles.Add(new ScriptBundle("~/bundles/ember").Include(
               "~/Scripts/handlebars.js",
-              "~/Scripts/ember-template-compiler.js",
-              "~/Scripts/ember.js"));
-            
+              "~/Scripts/ember.js"));            
 
           
         }       

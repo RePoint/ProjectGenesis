@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genesis", "Genesis\Genesis.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenesisWeb", "GenesisWeb\GenesisWeb.csproj", "{A976E749-56D8-4D38-9D15-B6E9CEEB7100}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4F99445F-77B3-462B-BF25-1A9A16E060B0}"
+	ProjectSection(SolutionItems) = preProject
+		gruntfile.js = gruntfile.js
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
