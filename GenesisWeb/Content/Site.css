@@ -24,11 +24,7 @@
 .sectionDescription {
     margin-bottom: 10px;
     padding-left: 10px;
-    border-left: solid 3px #0072c6;
-}
-
-.glyphicon {
-    color: #0072c6;
+    border-left: solid 3px;
 }
 
 label.error {

@@ -9,6 +9,7 @@
             data.Title = "";
             data.ScriptSrc = "";
             data.Sequence = "";
+            data.Excludes = "";
             data.IsEditing = true;
             data.IsNew = true;
             data.Type = "JS";

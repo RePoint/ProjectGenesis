@@ -2,24 +2,27 @@
     needs: "application",   
     application: Ember.computed.alias("controllers.application"), 
     actions: {       
-        addRow: function () {
+        addCSSRow: function () {
             var self = this;
 
             var data = new Object;
             data.Title = "";
             data.ScriptSrc = "";
             data.Sequence = "";
+            data.Excludes = "";
             data.IsEditing = true;
+            data.IsNew = true;
             data.Type = "CSS";
+            data.Id = guid();
 
             var cssLinks = self.get('CSSLinks');
             cssLinks.pushObject(data);
            
         },
-        editRow: function (item) {
+        editCSSRow: function (item) {
             Ember.set(item, "IsEditing", true);
         },
-        cancelRow: function (item) {
+        cancelCSSRow: function (item) {
             var scriptLinks = this.get('ScriptLinks');
 
             if (item.IsNew == true)
@@ -27,7 +30,7 @@
             else
                 Ember.set(item, "IsEditing", false);
         },
-        updateRow: function (item) {
+        updateCSSRow: function (item) {
             var self = this;
 
             //Clear all errros and alerts
@@ -67,7 +70,7 @@
                 });              
             }
         },
-        deleteRow: function (item) {
+        deleteCSSRow: function (item) {
             if (confirm("Are you sure you want to delete this record?")) {
                 var self = this;
 

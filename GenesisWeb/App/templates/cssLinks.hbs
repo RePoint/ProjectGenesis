@@ -1,6 +1,6 @@
 ﻿<h3 class="ms-accentText" id="headScriptTitle">CSS</h3>
-<div class="sectionDescription">
-   Cascading Style Sheets can be regular links (http://site.com/Style Library/style.css) or relative links (/Style Library/style.css)
+<div class="ms-ContentAccent2-borderColor sectionDescription">
+    Cascading Style Sheets can be regular links (http://site.com/Style Library/style.css) or relative links (/Style Library/style.css)
 </div>
 
 <form id="updateCSSLinksForm" method="get" action="">
@@ -9,9 +9,10 @@
  
         <thead>
             <tr>
-                <th style="width: 20%">Title</th>
-                <th style="width: 45%">Script Source Url</th>
-                <th style="width: 15%">Sequence</th>
+                <th style="width: 10%">Title</th>
+                <th style="width: 40%">Script Source Url</th>
+                <th style="width: 20%">Excludes <a href="#" title="This allows you to exclude certain urls from css registration. You could exclude an entire site by putting your sites url here (ex: repointtech.sharepoint.com) or you could exclude your app tenant (ex: repointtech-325323523563.sharepoint.com), which is useful if your apps have different styles. We are basically looking for if the url contains the string you put in here."><span class="ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></th>
+                <th style="width: 10%">Sequence</th>
                 <th style="width: 20%"></th>
             </tr>
         </thead>
@@ -22,27 +23,29 @@
                  {{#if cssItem.IsEditing}}
                 <td>{{ input type="text" id="cssLinkTitle" name="scriptLinkTitle" value=cssItem.Title class="form-control" required=true}}</td>
                 <td>{{ input type="text" id="cssLinkSrc" name="scriptLinkSrc" value=cssItem.ScriptSrc class="form-control" required=true}}</td>
+                <td>{{ input type="text" id="cssLinkExcludes" name="cssLinkExcludes" value=cssItem.Excludes class="form-control"  }}</td>
                 <td>{{ input type="text" id="cssLinkSeq" name="scriptLinkSeq" value=cssItem.Sequence class="form-control"  digits=true maxlength=3}}</td>
                 {{else}}                    
                 <td style="word-wrap: break-word">{{cssItem.Title}}</td>
                 <td style="word-wrap: break-word">{{cssItem.ScriptSrc}}</td>
+                <td style="word-wrap: break-word">{{cssItem.Excludes}}</td>
                 <td style="word-wrap: break-word">{{cssItem.Sequence}}</td>
                 {{/if}}
        
                 <td >
                     {{#if cssItem.IsEditing}}
-                        <button {{ action 'updateRow' cssItem }} type="button" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Update
+                        <button {{ action 'updateCSSRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-save" aria-hidden="true"></span> Update
                         </button>
-                        <button {{ action 'cancelRow' cssItem }} type="button" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel
+                        <button {{ action 'cancelCSSRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel
                         </button>
                     {{else}}
-                        <button {{ action 'editRow' cssItem }} type="button" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                        <button {{ action 'editCSSRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
                         </button>
-                        <button {{ action 'deleteRow' cssItem }} type="button" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                        <button {{ action 'deleteCSSRow' cssItem }} type="button" class="btn btn-default btn-xs">
+                            <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                         </button>
                     {{/if}}
                 </td>
@@ -51,10 +54,10 @@
         </tbody>
         <tfoot>
             <tr>             
-                <td colspan="4" style="text-align:center">
+                <td colspan="5" style="text-align:center">
                   
-                    <button {{ action 'addRow' }} type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add
+                    <button {{ action 'addCSSRow' }} type="button" class="btn btn-default btn-sm">
+                        <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-ok" aria-hidden="true"></span> Add
                     </button>
                  
                 </td>               

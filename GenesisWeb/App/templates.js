@@ -27,6 +27,12 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createComment("");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n                ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("td");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
@@ -54,9 +60,11 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,0);
           var morph2 = dom.createMorphAt(dom.childAt(fragment, [5]),0,0);
+          var morph3 = dom.createMorphAt(dom.childAt(fragment, [7]),0,0);
           inline(env, morph0, context, "input", [], {"type": "text", "id": "cssLinkTitle", "name": "scriptLinkTitle", "value": get(env, context, "cssItem.Title"), "class": "form-control", "required": true});
           inline(env, morph1, context, "input", [], {"type": "text", "id": "cssLinkSrc", "name": "scriptLinkSrc", "value": get(env, context, "cssItem.ScriptSrc"), "class": "form-control", "required": true});
-          inline(env, morph2, context, "input", [], {"type": "text", "id": "cssLinkSeq", "name": "scriptLinkSeq", "value": get(env, context, "cssItem.Sequence"), "class": "form-control", "digits": true, "maxlength": 3});
+          inline(env, morph2, context, "input", [], {"type": "text", "id": "cssLinkExcludes", "name": "cssLinkExcludes", "value": get(env, context, "cssItem.Excludes"), "class": "form-control"});
+          inline(env, morph3, context, "input", [], {"type": "text", "id": "cssLinkSeq", "name": "scriptLinkSeq", "value": get(env, context, "cssItem.Sequence"), "class": "form-control", "digits": true, "maxlength": 3});
           return fragment;
         }
       };
@@ -71,6 +79,13 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
           var el1 = dom.createTextNode("                ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("td");
+          dom.setAttribute(el1,"style","word-wrap: break-word");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n                ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("td");
           dom.setAttribute(el1,"style","word-wrap: break-word");
@@ -118,9 +133,11 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,0);
           var morph2 = dom.createMorphAt(dom.childAt(fragment, [5]),0,0);
+          var morph3 = dom.createMorphAt(dom.childAt(fragment, [7]),0,0);
           content(env, morph0, context, "cssItem.Title");
           content(env, morph1, context, "cssItem.ScriptSrc");
-          content(env, morph2, context, "cssItem.Sequence");
+          content(env, morph2, context, "cssItem.Excludes");
+          content(env, morph3, context, "cssItem.Sequence");
           return fragment;
         }
       };
@@ -142,7 +159,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                            ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-save");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-save");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Update\n                        ");
@@ -156,7 +173,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                            ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-remove");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-remove");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Cancel\n                        ");
@@ -188,8 +205,8 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           }
           var element2 = dom.childAt(fragment, [1]);
           var element3 = dom.childAt(fragment, [3]);
-          element(env, element2, context, "action", ["updateRow", get(env, context, "cssItem")], {});
-          element(env, element3, context, "action", ["cancelRow", get(env, context, "cssItem")], {});
+          element(env, element2, context, "action", ["updateCSSRow", get(env, context, "cssItem")], {});
+          element(env, element3, context, "action", ["cancelCSSRow", get(env, context, "cssItem")], {});
           return fragment;
         }
       };
@@ -211,7 +228,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                            ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-edit");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-edit");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Edit\n                        ");
@@ -225,7 +242,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                            ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-remove");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-remove");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Delete\n                        ");
@@ -257,8 +274,8 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
           }
           var element0 = dom.childAt(fragment, [1]);
           var element1 = dom.childAt(fragment, [3]);
-          element(env, element0, context, "action", ["editRow", get(env, context, "cssItem")], {});
-          element(env, element1, context, "action", ["deleteRow", get(env, context, "cssItem")], {});
+          element(env, element0, context, "action", ["editCSSRow", get(env, context, "cssItem")], {});
+          element(env, element1, context, "action", ["deleteCSSRow", get(env, context, "cssItem")], {});
           return fragment;
         }
       };
@@ -341,8 +358,8 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
       var el1 = dom.createTextNode("\n");
       dom.appendChild(el0, el1);
       var el1 = dom.createElement("div");
-      dom.setAttribute(el1,"class","sectionDescription");
-      var el2 = dom.createTextNode("\n   Cascading Style Sheets can be regular links (http://site.com/Style Library/style.css) or relative links (/Style Library/style.css)\n");
+      dom.setAttribute(el1,"class","ms-ContentAccent2-borderColor sectionDescription");
+      var el2 = dom.createTextNode("\n    Cascading Style Sheets can be regular links (http://site.com/Style Library/style.css) or relative links (/Style Library/style.css)\n");
       dom.appendChild(el1, el2);
       dom.appendChild(el0, el1);
       var el1 = dom.createTextNode("\n\n");
@@ -366,21 +383,36 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 20%");
+      dom.setAttribute(el5,"style","width: 10%");
       var el6 = dom.createTextNode("Title");
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 45%");
+      dom.setAttribute(el5,"style","width: 40%");
       var el6 = dom.createTextNode("Script Source Url");
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 15%");
+      dom.setAttribute(el5,"style","width: 20%");
+      var el6 = dom.createTextNode("Excludes ");
+      dom.appendChild(el5, el6);
+      var el6 = dom.createElement("a");
+      dom.setAttribute(el6,"href","#");
+      dom.setAttribute(el6,"title","This allows you to exclude certain urls from css registration. You could exclude an entire site by putting your sites url here (ex: repointtech.sharepoint.com) or you could exclude your app tenant (ex: repointtech-325323523563.sharepoint.com), which is useful if your apps have different styles. We are basically looking for if the url contains the string you put in here.");
+      var el7 = dom.createElement("span");
+      dom.setAttribute(el7,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign");
+      dom.setAttribute(el7,"aria-hidden","true");
+      dom.appendChild(el6, el7);
+      dom.appendChild(el5, el6);
+      dom.appendChild(el4, el5);
+      var el5 = dom.createTextNode("\n                ");
+      dom.appendChild(el4, el5);
+      var el5 = dom.createElement("th");
+      dom.setAttribute(el5,"style","width: 10%");
       var el6 = dom.createTextNode("Sequence");
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
@@ -414,7 +446,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
       var el5 = dom.createTextNode("             \n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("td");
-      dom.setAttribute(el5,"colspan","4");
+      dom.setAttribute(el5,"colspan","5");
       dom.setAttribute(el5,"style","text-align:center");
       var el6 = dom.createTextNode("\n                  \n                    ");
       dom.appendChild(el5, el6);
@@ -424,7 +456,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
       var el7 = dom.createTextNode("\n                        ");
       dom.appendChild(el6, el7);
       var el7 = dom.createElement("span");
-      dom.setAttribute(el7,"class","glyphicon glyphicon-ok");
+      dom.setAttribute(el7,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-ok");
       dom.setAttribute(el7,"aria-hidden","true");
       dom.appendChild(el6, el7);
       var el7 = dom.createTextNode(" Add\n                    ");
@@ -523,7 +555,7 @@ Ember.TEMPLATES["cssLinks"] = Ember.HTMLBars.template((function() {
       var element6 = dom.childAt(element5, [5, 1, 1, 1]);
       var morph0 = dom.createMorphAt(dom.childAt(element5, [3]),1,1);
       block(env, morph0, context, "each", [get(env, context, "CSSLinks")], {"keyword": "cssItem"}, child0, null);
-      element(env, element6, context, "action", ["addRow"], {});
+      element(env, element6, context, "action", ["addCSSRow"], {});
       return fragment;
     }
   };
@@ -764,8 +796,8 @@ Ember.TEMPLATES["scriptBlock"] = Ember.HTMLBars.template((function() {
       var el1 = dom.createTextNode("\n");
       dom.appendChild(el0, el1);
       var el1 = dom.createElement("div");
-      dom.setAttribute(el1,"class","sectionDescription");
-      var el2 = dom.createTextNode("\n    Add any Javascript you want here to add it to the header of your site. Do not add the \"script\" tag, it will do it for you.\n   \n");
+      dom.setAttribute(el1,"class","ms-ContentAccent2-borderColor sectionDescription");
+      var el2 = dom.createTextNode("\n    Add any Javascript you want here to add it to the header of your site. Do not add the \"script\" tag, it will do it for you.\n\n");
       dom.appendChild(el1, el2);
       dom.appendChild(el0, el1);
       var el1 = dom.createTextNode("\n\n\n");
@@ -792,7 +824,7 @@ Ember.TEMPLATES["scriptBlock"] = Ember.HTMLBars.template((function() {
       var el3 = dom.createTextNode("\n        ");
       dom.appendChild(el2, el3);
       var el3 = dom.createElement("span");
-      dom.setAttribute(el3,"class","glyphicon glyphicon-floppy-save");
+      dom.setAttribute(el3,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-floppy-save");
       dom.setAttribute(el3,"aria-hidden","true");
       dom.appendChild(el2, el3);
       var el3 = dom.createTextNode(" Save Head Script\n    ");
@@ -920,6 +952,12 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createComment("");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n                ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("td");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
@@ -947,9 +985,11 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,0);
           var morph2 = dom.createMorphAt(dom.childAt(fragment, [5]),0,0);
+          var morph3 = dom.createMorphAt(dom.childAt(fragment, [7]),0,0);
           inline(env, morph0, context, "input", [], {"type": "text", "id": "scriptLinkTitle", "name": "scriptLinkTitle", "value": get(env, context, "item.Title"), "class": "form-control", "required": true});
           inline(env, morph1, context, "input", [], {"type": "text", "id": "scriptLinkSrc", "name": "scriptLinkSrc", "value": get(env, context, "item.ScriptSrc"), "class": "form-control", "required": true});
-          inline(env, morph2, context, "input", [], {"type": "text", "id": "scriptLinkSeq", "name": "scriptLinkSeq", "value": get(env, context, "item.Sequence"), "class": "form-control", "digits": true, "maxlength": 3});
+          inline(env, morph2, context, "input", [], {"type": "text", "id": "scriptLinkExcludes", "name": "scriptLinkExcludes", "value": get(env, context, "item.Excludes"), "class": "form-control"});
+          inline(env, morph3, context, "input", [], {"type": "text", "id": "scriptLinkSeq", "name": "scriptLinkSeq", "value": get(env, context, "item.Sequence"), "class": "form-control", "digits": true, "maxlength": 3});
           return fragment;
         }
       };
@@ -971,6 +1011,13 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n                ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("td");
+          dom.setAttribute(el1,"style","word-wrap: break-word");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("                \n                ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("td");
           dom.setAttribute(el1,"style","word-wrap: break-word");
@@ -1011,9 +1058,11 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,0);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,0);
           var morph2 = dom.createMorphAt(dom.childAt(fragment, [5]),0,0);
+          var morph3 = dom.createMorphAt(dom.childAt(fragment, [7]),0,0);
           content(env, morph0, context, "item.Title");
           content(env, morph1, context, "item.ScriptSrc");
-          content(env, morph2, context, "item.Sequence");
+          content(env, morph2, context, "item.Excludes");
+          content(env, morph3, context, "item.Sequence");
           return fragment;
         }
       };
@@ -1035,7 +1084,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                        ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-save");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-save");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Update\n                    ");
@@ -1049,7 +1098,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                        ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-remove");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-remove");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Cancel\n                    ");
@@ -1104,7 +1153,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                        ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-edit");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-edit");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Edit\n                    ");
@@ -1118,7 +1167,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
           var el2 = dom.createTextNode("\n                        ");
           dom.appendChild(el1, el2);
           var el2 = dom.createElement("span");
-          dom.setAttribute(el2,"class","glyphicon glyphicon-remove");
+          dom.setAttribute(el2,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-remove");
           dom.setAttribute(el2,"aria-hidden","true");
           dom.appendChild(el1, el2);
           var el2 = dom.createTextNode(" Delete\n                    ");
@@ -1234,7 +1283,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
       var el1 = dom.createTextNode("\n");
       dom.appendChild(el0, el1);
       var el1 = dom.createElement("div");
-      dom.setAttribute(el1,"class","sectionDescription");
+      dom.setAttribute(el1,"class","ms-ContentAccent2-borderColor sectionDescription");
       var el2 = dom.createTextNode("\n    JavaScript references can be regular links (http://site.com/Style Library/style.js) or relative links (/Style Library/style.js)\n");
       dom.appendChild(el1, el2);
       dom.appendChild(el0, el1);
@@ -1259,21 +1308,36 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 20%");
+      dom.setAttribute(el5,"style","width: 10%");
       var el6 = dom.createTextNode("Title");
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 45%");
+      dom.setAttribute(el5,"style","width: 40%");
       var el6 = dom.createTextNode("Script Source Url");
+      dom.appendChild(el5, el6);
+      dom.appendChild(el4, el5);
+      var el5 = dom.createTextNode("                \n                ");
+      dom.appendChild(el4, el5);
+      var el5 = dom.createElement("th");
+      dom.setAttribute(el5,"style","width: 20%");
+      var el6 = dom.createTextNode("Excludes ");
+      dom.appendChild(el5, el6);
+      var el6 = dom.createElement("a");
+      dom.setAttribute(el6,"href","#");
+      dom.setAttribute(el6,"title","This allows you to exclude certain urls from script registration. You could exclude an entire site by putting your sites url here (ex: repointtech.sharepoint.com) or you could exclude your app tenant (ex: repointtech-325323523563.sharepoint.com), which is useful if your apps already have similar script references in them. We are basically looking for if the url contains the string you put in here.");
+      var el7 = dom.createElement("span");
+      dom.setAttribute(el7,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign");
+      dom.setAttribute(el7,"aria-hidden","true");
+      dom.appendChild(el6, el7);
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("th");
-      dom.setAttribute(el5,"style","width: 15%");
+      dom.setAttribute(el5,"style","width: 10%");
       var el6 = dom.createTextNode("Sequence");
       dom.appendChild(el5, el6);
       dom.appendChild(el4, el5);
@@ -1307,7 +1371,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
       var el5 = dom.createTextNode("\n                ");
       dom.appendChild(el4, el5);
       var el5 = dom.createElement("td");
-      dom.setAttribute(el5,"colspan","4");
+      dom.setAttribute(el5,"colspan","5");
       dom.setAttribute(el5,"style","text-align:center");
       var el6 = dom.createTextNode("\n\n                    ");
       dom.appendChild(el5, el6);
@@ -1317,7 +1381,7 @@ Ember.TEMPLATES["scriptLinks"] = Ember.HTMLBars.template((function() {
       var el7 = dom.createTextNode("\n                        ");
       dom.appendChild(el6, el7);
       var el7 = dom.createElement("span");
-      dom.setAttribute(el7,"class","glyphicon glyphicon-ok");
+      dom.setAttribute(el7,"class","ms-ContentAccent1-fontColor glyphicon glyphicon-ok");
       dom.setAttribute(el7,"aria-hidden","true");
       dom.appendChild(el6, el7);
       var el7 = dom.createTextNode(" Add\n                    ");

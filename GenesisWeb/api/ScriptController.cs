@@ -135,7 +135,7 @@ namespace GenesisWeb.api
             }
         }
 
-
+       
         public Configurations GetConfigurations(ClientContext clientContext, out UserCustomActionCollection customActions)
         {
             Configurations configurations = new Configurations();
@@ -158,15 +158,28 @@ namespace GenesisWeb.api
                 {
                     if (customAction.Title.StartsWith(GENESIS_CSS) &&
                          !String.IsNullOrEmpty(customAction.ScriptBlock))
-                    {
+                    {      
                         string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadCSS('" }, StringSplitOptions.None)[1];
-                        scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
+                        string exclude = "";
+
+                        if (scriptSrc.Contains(","))
+                        {
+                            //means we have an Exclude
+                            var scriptScrSplit = scriptSrc.Split(new string[] { "'," }, StringSplitOptions.None);
+                            scriptSrc = scriptScrSplit[0];
+                            exclude = scriptScrSplit[1].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                        }
+                        else
+                        {
+                            scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
+                        }
 
                         configurations.CSSLinks.Add(new ScriptLinkAction
                         {
                             Id = customAction.Id.ToString(),
                             Title = customAction.Title.Replace(GENESIS_CSS, ""),
                             ScriptSrc = scriptSrc,
+                            Excludes = exclude,
                             Sequence = customAction.Sequence.ToString(),
                             Type = CSS
                         });  
@@ -175,13 +188,26 @@ namespace GenesisWeb.api
                             !String.IsNullOrEmpty(customAction.ScriptBlock))
                     {
                         string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadScript('" }, StringSplitOptions.None)[1];
-                        scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
+                        string exclude = "";
+
+                        if (scriptSrc.Contains(","))
+                        {
+                            //means we have an Exclude
+                            var scriptScrSplit = scriptSrc.Split(new string[] { "'," }, StringSplitOptions.None);
+                            scriptSrc = scriptScrSplit[0];
+                            exclude = scriptScrSplit[1].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                        }
+                        else
+                        {
+                            scriptSrc = scriptSrc.Split(new string[] { "');" }, StringSplitOptions.None)[0];
+                        }
 
                         configurations.ScriptLinks.Add(new ScriptLinkAction
                         {
                             Id = customAction.Id.ToString(),
                             Title = customAction.Title.Replace(GENESIS_JS, ""),
                             ScriptSrc = scriptSrc,
+                            Excludes = exclude,
                             Sequence = customAction.Sequence.ToString(),
                             Type = JS
                         });  
@@ -201,14 +227,21 @@ namespace GenesisWeb.api
             var loadScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_SCRIPT));
             var loadCSSAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_CSS));
 
+            if (loadScriptAction != null) {
+                loadScriptAction.DeleteObject();
+                clientContext.ExecuteQuery();
+            }
+
             //Register our help Load Script so people can load external scripts
-            if (loadScriptAction == null)
-            {
-                string loadScript = "function LoadScript(scriptUrl) { " +
+           // if (loadScriptAction == null)
+            //{
+                string loadScript = "function LoadScript(scriptUrl, excludes) { " +
+                                    " if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {" +
                                     "   var genesisLoadScript = document.createElement('SCRIPT'); " +
                                     "   genesisLoadScript.type = 'text/javascript'; " +
                                     "   genesisLoadScript.src = scriptUrl; " +
                                     "   document.getElementsByTagName('head')[0].appendChild(genesisLoadScript);" +
+                                    " }" +
                                     "}";
 
                 UserCustomAction customLoadScriptAction = customActions.Add();
@@ -216,17 +249,26 @@ namespace GenesisWeb.api
                 customLoadScriptAction.ScriptBlock = loadScript;
                 customLoadScriptAction.Title = LOAD_SCRIPT;
                 customLoadScriptAction.Update();
+           // }
+
+
+            if (loadCSSAction != null)
+            {
+                loadCSSAction.DeleteObject();
+                clientContext.ExecuteQuery();
             }
 
             //Register our help Load CSS so people can load external scripts
-            if (loadCSSAction == null)
-            {
-                string loadCSS = "function LoadCSS(scriptUrl) { " +
-                                    "   var genesisLoadScript = document.createElement('link'); " +
-                                    "   genesisLoadScript.rel = 'stylesheet'; " +
-                                    "   genesisLoadScript.type = 'text/css'; " +
-                                    "   genesisLoadScript.href = scriptUrl; " +
-                                    "   document.getElementsByTagName('head')[0].appendChild(genesisLoadScript);" +
+           // if (loadCSSAction == null)
+           // {
+                string loadCSS = "function LoadCSS(cssUrl, excludes) { " +
+                                    " if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {" +
+                                    "   var genesisLoadCSS= document.createElement('link'); " +
+                                    "   genesisLoadCSS.rel = 'stylesheet'; " +
+                                    "   genesisLoadCSS.type = 'text/css'; " +
+                                    "   genesisLoadCSS.href = cssUrl; " +
+                                    "   document.getElementsByTagName('head')[0].appendChild(genesisLoadCSS);" +
+                                    " }" +
                                     "}";
 
                 UserCustomAction customLoadCSSAction = customActions.Add();
@@ -234,7 +276,7 @@ namespace GenesisWeb.api
                 customLoadCSSAction.ScriptBlock = loadCSS;
                 customLoadCSSAction.Title = LOAD_CSS;
                 customLoadCSSAction.Update();
-            }
+           // }
 
             clientContext.ExecuteQuery();
         }
@@ -312,11 +354,20 @@ namespace GenesisWeb.api
             customAction.Title = scriptLinkAction.Title;          
 
             if(scriptLinkAction.Type == JS) {
-                customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "');";
+                if (string.IsNullOrEmpty(scriptLinkAction.Excludes))
+                    customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "');";
+                else {
+                    customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "','" + scriptLinkAction.Excludes + "');";
+                }
                 customAction.Title = GENESIS_JS + customAction.Title;
             }else {
-                customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "');";
-                customAction.Title = GENESIS_CSS + customAction.Title;
+                if (string.IsNullOrEmpty(scriptLinkAction.Excludes))
+                    customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "');";
+                else
+                {
+                    customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "','" + scriptLinkAction.Excludes + "');";
+                }
+                customAction.Title = GENESIS_CSS + customAction.Title;        
             }           
 
             int sequenceNum = 0;
@@ -371,6 +422,7 @@ namespace GenesisWeb.api
         public string Title { get; set; }
         public string ScriptSrc { get; set; }
         public string Sequence { get; set; }
+        public string Excludes { get; set; }
         public bool IsEditing { get; set; }
         public bool IsNew { get; set; }
         public string Id { get; set; }
