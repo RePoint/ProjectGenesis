@@ -1,6 +1,18 @@
 ﻿<h3 class="ms-accentText" id="headScriptTitle">JavaScript</h3>
 <div class="ms-ContentAccent2-borderColor sectionDescription">
-    JavaScript references can be regular links (http://site.com/Style Library/style.js) or relative links (/Style Library/style.js)
+    JavaScript references can be regular links (http://site.com/Style Library/style.js) or relative links (/Style Library/style.js) <br />
+    <b>Pro Tip:</b> Use the SOD to load third party Frameworks like jQuery on Demand and then reference them from your custom js files with an EnsureScriptFunc. <br />
+    <a href="#" id="toggleEx1" onclick="$('#toggleExArea1').toggle();return false">Example</a>
+    <div id="toggleExArea1" style="display:none">
+        if (typeof jQuery === "undefined") { <br />
+        <span style="padding-left: 10px">EnsureScriptFunc("jQuery", null, function() {</span> <br />
+        <span style="padding-left: 20px"> alert('jQuery Loaded'); </span><br />
+        <span style="padding-left: 10px">}); </span><br />
+        } else { <br />
+        <span style="padding-left: 10px">alert('jQuery Loaded');</span> <br />
+        }
+    </div>
+
 </div>
 
 <form id="updateScriptLinksForm" method="get" action="">
@@ -9,11 +21,12 @@
 
         <thead>
             <tr>
-                <th style="width: 10%">Title</th>
-                <th style="width: 40%">Script Source Url</th>                
-                <th style="width: 20%">Excludes <a href="#" title="This allows you to exclude certain urls from script registration. You could exclude an entire site by putting your sites url here (ex: repointtech.sharepoint.com) or you could exclude your app tenant (ex: repointtech-325323523563.sharepoint.com), which is useful if your apps already have similar script references in them. We are basically looking for if the url contains the string you put in here."><span class="ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></th>
-                <th style="width: 10%">Sequence</th>
-                <th style="width: 20%"></th>
+                <th style="width: 9%">Title</th>
+                <th style="width: 33%">Script Source Url</th>  
+                <th style="width: 17%">Excludes <a href="#" title="This allows you to exclude certain urls from script registration. You could exclude an entire site by putting your sites url here (ex: repointtech.sharepoint.com) or you could exclude your app tenant (ex: repointtech-325323523563.sharepoint.com), which is useful if your apps already have similar script references in them. We are basically looking for if the url contains the string you put in here."><span class="ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></th>
+                <th style="width: 8%">SOD <a href="#" title="SOD is a Load on Demand Function of SharePoint. This is typically used for third party frameworks like jQuery"><span class="ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></th>
+                <th style="width: 15%">Dependency <a href="#" title="ONLY works with SOD. If you JS file is dependent on another (ex: jQuery UI is dependent on jQuery), add the title of that file here"><span class="ms-ContentAccent1-fontColor glyphicon glyphicon-question-sign" aria-hidden="true"></span></a></th>            
+                <th style="width: 20%"></th> 
             </tr>
         </thead>
         <tbody>
@@ -24,12 +37,14 @@
                 <td>{{ input type="text" id="scriptLinkTitle" name="scriptLinkTitle" value=item.Title class="form-control" required=true}}</td>
                 <td>{{ input type="text" id="scriptLinkSrc" name="scriptLinkSrc" value=item.ScriptSrc class="form-control" required=true}}</td>
                 <td>{{ input type="text" id="scriptLinkExcludes" name="scriptLinkExcludes" value=item.Excludes class="form-control"  }}</td>
-                <td>{{ input type="text" id="scriptLinkSeq" name="scriptLinkSeq" value=item.Sequence class="form-control"  digits=true maxlength=3}}</td>
+                <td>{{ input type="checkbox" id="scriptLinkSod" name="scriptLinkSod" checked=item.SOD }}</td>
+                <td>{{ input type="text" id="scriptLinkDependency" name="scriptLinkDependency" value=item.Dependency class="form-control"}}</td>
                 {{else}}
                 <td style="word-wrap: break-word">{{item.Title}}</td>
-                <td style="word-wrap: break-word">{{item.ScriptSrc}}</td>                
+                <td style="word-wrap: break-word">{{item.ScriptSrc}}</td> 
                 <td style="word-wrap: break-word">{{item.Excludes}}</td>
-                <td style="word-wrap: break-word">{{item.Sequence}}</td>
+                <td style="word-wrap: break-word">{{item.SOD}}</td>
+                <td style="word-wrap: break-word">{{item.Dependency}}</td>
                 {{/if}}
 
                 <td>
@@ -54,7 +69,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" style="text-align:center">
+                <td colspan="6" style="text-align:center">
 
                     <button {{ action 'addRow' }} type="button" class="btn btn-default btn-sm">
                         <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-ok" aria-hidden="true"></span> Add
@@ -73,5 +88,8 @@
             <p><strong>Success:</strong> Your changes have been made.</p>
         </div>
     </div>
+    <button {{ action 'deleteAll' item }} type="button" class="btn btn-default btn-xs">
+        <span class="ms-ContentAccent1-fontColor glyphicon glyphicon-remove" aria-hidden="true"></span> Delete All
+    </button>
 </form>
 

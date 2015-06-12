@@ -31,7 +31,7 @@ namespace GenesisWeb.api
             {   
                 Configurations configurations = new Configurations();
                 using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
-                {                    
+                {
                     UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
                     configurations = GetConfigurations(clientContext,  out customActions);
                 }
@@ -113,7 +113,38 @@ namespace GenesisWeb.api
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
             }
-        }       
+        }
+
+        [HttpPost]
+        public dynamic DeleteAllScripts([FromBody] dynamic config)
+        {
+            try
+            {
+                using (ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(config["SPHostUrl"].ToString(), config["SPAppToken"].ToString()))
+                {
+                    UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
+                    clientContext.Load(customActions);
+                    clientContext.ExecuteQuery();
+
+                    //Delete the old one in case we made any updates
+                    var loadScriptActions = customActions.Where(x => (x.Title.Contains(GENESIS_JS) || x.Title.Contains(LOAD_SCRIPT))).ToList();
+                    if (loadScriptActions != null)
+                    {
+                        foreach (var loadScriptAction in loadScriptActions)
+                            loadScriptAction.DeleteObject();
+
+                        clientContext.ExecuteQuery();
+                    }
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, APIHelper.WriteErrorInfo(ex));
+            }
+        }  
         
 
         [HttpPost]
@@ -144,7 +175,6 @@ namespace GenesisWeb.api
             clientContext.Load(customActions);
             clientContext.ExecuteQuery();
 
-
             configurations.ScriptLinks = new List<ScriptLinkAction>();
             configurations.CSSLinks = new List<ScriptLinkAction>();
 
@@ -152,13 +182,14 @@ namespace GenesisWeb.api
             {
                 if (customAction.Title == HEADER)
                 {
-                    configurations.HeaderScripts = customAction.ScriptBlock;
+                   configurations.HeaderScripts = customAction.ScriptBlock;                  
                 }
                 else if (customAction.Title != LOAD_SCRIPT)
                 {
                     if (customAction.Title.StartsWith(GENESIS_CSS) &&
                          !String.IsNullOrEmpty(customAction.ScriptBlock))
-                    {      
+                    {                    
+
                         string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadCSS('" }, StringSplitOptions.None)[1];
                         string exclude = "";
 
@@ -187,23 +218,30 @@ namespace GenesisWeb.api
                     else if (customAction.Title.StartsWith(GENESIS_JS) &&
                             !String.IsNullOrEmpty(customAction.ScriptBlock))
                     {
+                       
                         string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadScript('" }, StringSplitOptions.None)[1];
-                        string exclude = "";
-                        string loadAction = "";
+                        string exclude = "";  
+                        string dependency = "";
+                        var useSod = false;
 
                         if (scriptSrc.Contains(","))
                         {
-                            //means we have an Exclude and/or a LoadAction
+                            //means we have an Exclude and/or a Dependency
                             var scriptScrSplit = scriptSrc.Split(new string[] { "'," }, StringSplitOptions.None);
                             scriptSrc = scriptScrSplit[0]; 
                           
                             if (scriptScrSplit.Length == 2) {
                                 exclude = scriptScrSplit[1].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
-                            }
-                            else if (scriptScrSplit.Length == 3)
+                            } else if (scriptScrSplit.Length == 3) {     
+                                exclude = scriptScrSplit[1].Replace("'", "");
+                                dependency = scriptScrSplit[2].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                            } else if (scriptScrSplit.Length == 5)
                             {
                                 exclude = scriptScrSplit[1].Replace("'", "");
-                                loadAction = scriptScrSplit[2].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                                dependency = scriptScrSplit[2].Replace("'", "");
+                                var title = scriptScrSplit[3].Replace("'", "");
+                                var sod = scriptScrSplit[4].Split(new string[] { ");" }, StringSplitOptions.None)[0];
+                                useSod = sod == "true";
                             }
                         }
                         else
@@ -216,8 +254,9 @@ namespace GenesisWeb.api
                             Id = customAction.Id.ToString(),
                             Title = customAction.Title.Replace(GENESIS_JS, ""),
                             ScriptSrc = scriptSrc,
+                            SOD = useSod,
                             Excludes = exclude,
-                            CustomAction = loadAction,
+                            Dependency = dependency,
                             Sequence = customAction.Sequence.ToString(),
                             Type = JS
                         });  
@@ -236,7 +275,7 @@ namespace GenesisWeb.api
             clientContext.ExecuteQuery();
 
             //Delete the old one in case we made any updates
-            var loadScriptActions = customActions.Where(x => x.Title.Equals(LOAD_SCRIPT)).ToList(); 
+            var loadScriptActions = customActions.Where(x => x.Title.Contains(LOAD_SCRIPT)).ToList(); 
             if (loadScriptActions != null) {
                 foreach(var loadScriptAction in loadScriptActions)
                     loadScriptAction.DeleteObject();
@@ -248,7 +287,7 @@ namespace GenesisWeb.api
             UserCustomAction customLoadScriptAction = customActions.Add();
             customLoadScriptAction.Location = "ScriptLink";
             customLoadScriptAction.ScriptBlock = LoadScript();
-            customLoadScriptAction.Title = LOAD_SCRIPT;
+            customLoadScriptAction.Title = LOAD_SCRIPT + Environment.NewLine;
             customLoadScriptAction.Update();
 
             //Delete the old one in case we made any updates
@@ -264,7 +303,7 @@ namespace GenesisWeb.api
             //Register our help Load CSS so people can load external scripts         
             UserCustomAction customLoadCSSAction = customActions.Add();
             customLoadCSSAction.Location = "ScriptLink";
-            customLoadCSSAction.ScriptBlock = LoadCSS();
+            customLoadCSSAction.ScriptBlock = LoadCSS() + Environment.NewLine;
             customLoadCSSAction.Title = LOAD_CSS;
             customLoadCSSAction.Update();        
 
@@ -298,6 +337,7 @@ namespace GenesisWeb.api
                 customAction.Location = "ScriptLink";
                 customAction.ScriptBlock = script;
                 customAction.Title = HEADER;
+                customAction.Sequence = 5000;
                 customAction.Update();
             }
             else if (!isNew)
@@ -307,10 +347,7 @@ namespace GenesisWeb.api
 
 
             clientContext.Load(customAction);
-            clientContext.ExecuteQuery();
-
-            //Debugging helper...
-            //CleanupScriptBlock(clientContext, headerScriptAction, loadScriptAction, loadCSSAction);           
+            clientContext.ExecuteQuery();        
         }
                
 
@@ -343,9 +380,9 @@ namespace GenesisWeb.api
 
             if(scriptLinkAction.Type == JS) {
                 var excludes = !string.IsNullOrEmpty(scriptLinkAction.Excludes) ? scriptLinkAction.Excludes : "";
-                var loadAction = !string.IsNullOrEmpty(scriptLinkAction.CustomAction) ? scriptLinkAction.CustomAction : "";
-
-                customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "','" + excludes + "','" + loadAction + "');";                            
+                var dependency = !string.IsNullOrEmpty(scriptLinkAction.Dependency) ? scriptLinkAction.Dependency : "";
+        
+                customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "','" + excludes + "','" +  dependency + "','" +customAction.Title + "'," + scriptLinkAction.SOD.ToString().ToLower() + ");";                            
                 customAction.Title = GENESIS_JS + customAction.Title;
             }else {
                 var excludes = !string.IsNullOrEmpty(scriptLinkAction.Excludes) ? scriptLinkAction.Excludes : "";
@@ -357,6 +394,12 @@ namespace GenesisWeb.api
             int sequenceNum = 0;
             int.TryParse(scriptLinkAction.Sequence, out sequenceNum);
             customAction.Sequence = sequenceNum;
+
+            if (sequenceNum == 0) {
+                if (!scriptLinkAction.SOD) {
+                    sequenceNum = 1000; //make sure our custom scripts run after the SOD registrations
+                }
+            }
 
             customAction.Update();  
 
@@ -371,6 +414,8 @@ namespace GenesisWeb.api
             };
 
         }
+        
+     
 
         private void DeleteCustomActionScriptLink(ClientContext clientContext, ScriptLinkAction scriptLink)
         {
@@ -393,12 +438,21 @@ namespace GenesisWeb.api
 
 
         private string LoadScript() {
-            return @"function LoadScript(scriptUrl, excludes, nameOfEvent) { 
-                        if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {
-                            
-                            document.write('<script type=""text/javascript"" src=""' + scriptUrl + '""></' + 'script>');
+            return @"function LoadScript(scriptUrl, excludes, dependency, title, useSod) { 
 
-                           
+                        if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {                            
+                            
+                            if(useSod) {
+                                RegisterSod(title, scriptUrl);   
+                            
+                                if(dependency && dependency != '')
+                                    RegisterSodDep(title, dependency); 
+                            } else {
+                                 var genesisLoadScript = document.createElement('SCRIPT'); 
+                                 genesisLoadScript.type = 'text/javascript'; 
+                                 genesisLoadScript.src = scriptUrl;
+                                 document.getElementsByTagName('head')[0].appendChild(genesisLoadScript);                               
+                            }                    
                         }
                     }";
 
@@ -429,9 +483,10 @@ namespace GenesisWeb.api
     public class ScriptLinkAction {
         public string Title { get; set; }
         public string ScriptSrc { get; set; }
+        public string Dependency { get; set; }
+        public bool SOD { get; set; }
         public string Sequence { get; set; }
-        public string Excludes { get; set; }
-        public string CustomAction { get; set; }
+        public string Excludes { get; set; }      
         public bool IsEditing { get; set; }
         public bool IsNew { get; set; }
         public string Id { get; set; }

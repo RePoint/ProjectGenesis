@@ -8,7 +8,9 @@
             var data = new Object;
             data.Title = "";
             data.ScriptSrc = "";
+            data.Dependency = "";
             data.Sequence = "";
+            data.SOD = false;
             data.Excludes = "";
             data.IsEditing = true;
             data.IsNew = true;
@@ -95,6 +97,38 @@
                     var scriptLinks = self.get('ScriptLinks');
                     scriptLinks.removeObject(item);
 
+                    $("#scriptSuccess").fadeIn('slow');
+                    window.setTimeout(function () {
+                        $("#scriptSuccess").fadeOut('slow');
+                    }, 2000);
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#scriptError").fadeIn('slow');
+                    $("#scriptErrorDetails").html(jqXHR.responseJSON.Message);
+                });
+            }
+        },
+        deleteAll: function () {
+            if (confirm("Are you sure you want to delete all the custom actions in your system?")) {
+                var self = this;
+
+                //Clear all errros and alerts
+                $(".alert").hide();
+                $(".errorDetails").html("");
+
+                var postdata = {
+                    SPHostUrl: decodeURIComponent(getQueryStringParameter('SPHostUrl')),
+                    SPAppToken: Genesis.pageData.spAppToken,
+                };
+
+                Em.$.ajax(
+                  "/api/script/DeleteAllScripts", {
+                      data: JSON.stringify(postdata),
+                      contentType: "application/json",
+                      processData: false,
+                      type: 'POST'
+                  }
+                ).done(function (data) {   
                     $("#scriptSuccess").fadeIn('slow');
                     window.setTimeout(function () {
                         $("#scriptSuccess").fadeOut('slow');

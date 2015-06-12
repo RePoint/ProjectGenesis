@@ -1,6 +1,17 @@
 ﻿<h3 class="ms-accentText" id="headScriptTitle">Head script</h3>
 <div class="ms-ContentAccent2-borderColor sectionDescription">
-    Add any Javascript you want here to add it to the header of your site. Do not add the "script" tag, it will do it for you.
+    Add any Javascript you want here to add it to the header of your site. Do not add the "script" tag, it will do it for you. <br /><br/>
+    <b>Pro Tip:</b> If you want to run JavaScript after one of your JavaScript files loads, use the EnsureScriptFunc. Note: this only works if the framework you are looking for used the SOD. <br />    
+    <a href="#" id="toggleEx" onclick="$('#toggleExArea').toggle();return false">Example</a>
+    <div id="toggleExArea" style="display:none">
+        if (typeof jQuery === "undefined") { <br />
+        <span style="padding-left: 10px">EnsureScriptFunc("jQuery", null, function() {</span> <br />
+        <span style="padding-left: 20px"> alert('jQuery Loaded'); </span><br />
+        <span style="padding-left: 10px">}); </span><br />
+        } else { <br />
+        <span style="padding-left: 10px">alert('jQuery Loaded');</span> <br />
+        }
+    </div>
 
 </div>
 
