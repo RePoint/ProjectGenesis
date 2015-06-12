@@ -189,13 +189,22 @@ namespace GenesisWeb.api
                     {
                         string scriptSrc = customAction.ScriptBlock.Split(new string[] { "LoadScript('" }, StringSplitOptions.None)[1];
                         string exclude = "";
+                        string loadAction = "";
 
                         if (scriptSrc.Contains(","))
                         {
-                            //means we have an Exclude
+                            //means we have an Exclude and/or a LoadAction
                             var scriptScrSplit = scriptSrc.Split(new string[] { "'," }, StringSplitOptions.None);
-                            scriptSrc = scriptScrSplit[0];
-                            exclude = scriptScrSplit[1].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                            scriptSrc = scriptScrSplit[0]; 
+                          
+                            if (scriptScrSplit.Length == 2) {
+                                exclude = scriptScrSplit[1].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                            }
+                            else if (scriptScrSplit.Length == 3)
+                            {
+                                exclude = scriptScrSplit[1].Replace("'", "");
+                                loadAction = scriptScrSplit[2].Split(new string[] { "');" }, StringSplitOptions.None)[0].Replace("'", "");
+                            }
                         }
                         else
                         {
@@ -208,6 +217,7 @@ namespace GenesisWeb.api
                             Title = customAction.Title.Replace(GENESIS_JS, ""),
                             ScriptSrc = scriptSrc,
                             Excludes = exclude,
+                            CustomAction = loadAction,
                             Sequence = customAction.Sequence.ToString(),
                             Type = JS
                         });  
@@ -218,65 +228,45 @@ namespace GenesisWeb.api
             return configurations;
         }
 
+     
         private void RegisterHelpers(ClientContext clientContext)
         {
             UserCustomActionCollection customActions = clientContext.Site.UserCustomActions;
             clientContext.Load(customActions);
             clientContext.ExecuteQuery();
 
-            var loadScriptAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_SCRIPT));
-            var loadCSSAction = customActions.FirstOrDefault(x => x.Title.Equals(LOAD_CSS));
+            //Delete the old one in case we made any updates
+            var loadScriptActions = customActions.Where(x => x.Title.Equals(LOAD_SCRIPT)).ToList(); 
+            if (loadScriptActions != null) {
+                foreach(var loadScriptAction in loadScriptActions)
+                    loadScriptAction.DeleteObject();
 
-            if (loadScriptAction != null) {
-                loadScriptAction.DeleteObject();
                 clientContext.ExecuteQuery();
             }
 
-            //Register our help Load Script so people can load external scripts
-           // if (loadScriptAction == null)
-            //{
-                string loadScript = "function LoadScript(scriptUrl, excludes) { " +
-                                    " if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {" +
-                                    "   var genesisLoadScript = document.createElement('SCRIPT'); " +
-                                    "   genesisLoadScript.type = 'text/javascript'; " +
-                                    "   genesisLoadScript.src = scriptUrl; " +
-                                    "   document.getElementsByTagName('head')[0].appendChild(genesisLoadScript);" +
-                                    " }" +
-                                    "}";
+            //Register our help Load Script so people can load external scripts          
+            UserCustomAction customLoadScriptAction = customActions.Add();
+            customLoadScriptAction.Location = "ScriptLink";
+            customLoadScriptAction.ScriptBlock = LoadScript();
+            customLoadScriptAction.Title = LOAD_SCRIPT;
+            customLoadScriptAction.Update();
 
-                UserCustomAction customLoadScriptAction = customActions.Add();
-                customLoadScriptAction.Location = "ScriptLink";
-                customLoadScriptAction.ScriptBlock = loadScript;
-                customLoadScriptAction.Title = LOAD_SCRIPT;
-                customLoadScriptAction.Update();
-           // }
-
-
-            if (loadCSSAction != null)
+            //Delete the old one in case we made any updates
+            var loadCSSActions = customActions.Where(x => x.Title.Equals(LOAD_CSS)).ToList();
+            if (loadCSSActions != null)
             {
-                loadCSSAction.DeleteObject();
+                foreach (var loadCSSAction in loadCSSActions)
+                    loadCSSAction.DeleteObject();
+
                 clientContext.ExecuteQuery();
             }
 
-            //Register our help Load CSS so people can load external scripts
-           // if (loadCSSAction == null)
-           // {
-                string loadCSS = "function LoadCSS(cssUrl, excludes) { " +
-                                    " if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {" +
-                                    "   var genesisLoadCSS= document.createElement('link'); " +
-                                    "   genesisLoadCSS.rel = 'stylesheet'; " +
-                                    "   genesisLoadCSS.type = 'text/css'; " +
-                                    "   genesisLoadCSS.href = cssUrl; " +
-                                    "   document.getElementsByTagName('head')[0].appendChild(genesisLoadCSS);" +
-                                    " }" +
-                                    "}";
-
-                UserCustomAction customLoadCSSAction = customActions.Add();
-                customLoadCSSAction.Location = "ScriptLink";
-                customLoadCSSAction.ScriptBlock = loadCSS;
-                customLoadCSSAction.Title = LOAD_CSS;
-                customLoadCSSAction.Update();
-           // }
+            //Register our help Load CSS so people can load external scripts         
+            UserCustomAction customLoadCSSAction = customActions.Add();
+            customLoadCSSAction.Location = "ScriptLink";
+            customLoadCSSAction.ScriptBlock = LoadCSS();
+            customLoadCSSAction.Title = LOAD_CSS;
+            customLoadCSSAction.Update();        
 
             clientContext.ExecuteQuery();
         }
@@ -346,27 +336,21 @@ namespace GenesisWeb.api
                 //insert
                 id = Guid.NewGuid();
                 customAction = customActions.Add();
-            }
-
-          
+            }          
 
             customAction.Location = "ScriptLink";
             customAction.Title = scriptLinkAction.Title;          
 
             if(scriptLinkAction.Type == JS) {
-                if (string.IsNullOrEmpty(scriptLinkAction.Excludes))
-                    customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "');";
-                else {
-                    customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "','" + scriptLinkAction.Excludes + "');";
-                }
+                var excludes = !string.IsNullOrEmpty(scriptLinkAction.Excludes) ? scriptLinkAction.Excludes : "";
+                var loadAction = !string.IsNullOrEmpty(scriptLinkAction.CustomAction) ? scriptLinkAction.CustomAction : "";
+
+                customAction.ScriptBlock = "LoadScript('" + scriptLinkAction.ScriptSrc + "','" + excludes + "','" + loadAction + "');";                            
                 customAction.Title = GENESIS_JS + customAction.Title;
             }else {
-                if (string.IsNullOrEmpty(scriptLinkAction.Excludes))
-                    customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "');";
-                else
-                {
-                    customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "','" + scriptLinkAction.Excludes + "');";
-                }
+                var excludes = !string.IsNullOrEmpty(scriptLinkAction.Excludes) ? scriptLinkAction.Excludes : "";
+
+                customAction.ScriptBlock = "LoadCSS('" + scriptLinkAction.ScriptSrc + "','" + excludes + "');";
                 customAction.Title = GENESIS_CSS + customAction.Title;        
             }           
 
@@ -406,7 +390,31 @@ namespace GenesisWeb.api
             clientContext.Load(headerScriptAction);
             clientContext.ExecuteQuery();
         }
-      
+
+
+        private string LoadScript() {
+            return @"function LoadScript(scriptUrl, excludes, nameOfEvent) { 
+                        if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {
+                            
+                            document.write('<script type=""text/javascript"" src=""' + scriptUrl + '""></' + 'script>');
+
+                           
+                        }
+                    }";
+
+        }
+
+        private string LoadCSS() {
+            return @"function LoadCSS(cssUrl, excludes) {
+                        if((excludes && excludes != '' && window.location.href.indexOf(excludes) === -1) || (!excludes || excludes==='')) {
+                            var genesisLoadCSS= document.createElement('link'); 
+                            genesisLoadCSS.rel = 'stylesheet';
+                            genesisLoadCSS.type = 'text/css';
+                            genesisLoadCSS.href = cssUrl;
+                            document.getElementsByTagName('head')[0].appendChild(genesisLoadCSS);
+                        }
+                    }";
+        }
       
     }
 
@@ -423,6 +431,7 @@ namespace GenesisWeb.api
         public string ScriptSrc { get; set; }
         public string Sequence { get; set; }
         public string Excludes { get; set; }
+        public string CustomAction { get; set; }
         public bool IsEditing { get; set; }
         public bool IsNew { get; set; }
         public string Id { get; set; }

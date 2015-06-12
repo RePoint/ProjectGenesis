@@ -2,7 +2,8 @@
 
     didInsertElement: function () {      
         $("#updateScriptLinksForm").validate();
-        $(document).tooltip();
+
+
     }
 
 });
