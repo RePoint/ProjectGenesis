@@ -9,5 +9,5 @@ The first release of Project Genesis is a script adder. It allows you to add cus
 to the entire SharePoint site collection without modifying the master page. Simply run the app, add the script references 
 and it will be added to your entire site collection.
 
-![alt tag](https://cloud.githubusercontent.com/assets/9720357/6997748/30358f44-db96-11e4-9a52-8a307ce326da.png)
-![alt tag](https://cloud.githubusercontent.com/assets/9720357/6997749/30ea800c-db96-11e4-8fab-83f9329e971b.png)
+![alt tag](https://cloud.githubusercontent.com/assets/9720357/7159093/b10d4508-e34d-11e4-9d36-5752455228b9.png)
+
