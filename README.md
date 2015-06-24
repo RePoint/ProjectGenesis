@@ -11,3 +11,5 @@ and it will be added to your entire site collection.
 
 ![alt tag](https://cloud.githubusercontent.com/assets/9720357/7159093/b10d4508-e34d-11e4-9d36-5752455228b9.png)
 
+Installation instructions can be found here: http://www.greggalipeau.com/deploying-project-genesis-to-azure/
+
